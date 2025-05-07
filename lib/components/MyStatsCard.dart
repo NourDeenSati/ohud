@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax/iconsax.dart';
+import 'package:get/get.dart';
+import 'package:ohud/screens/CircleDataScreen.dart';
 
 class Mystatscard extends StatelessWidget {
   const Mystatscard({super.key});
@@ -33,7 +34,9 @@ class Mystatscard extends StatelessWidget {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 Spacer(),
-                Icon(Icons.arrow_circle_left_rounded,color: Color(0XFF169B88),size: 28,),
+                GestureDetector(onTap: () {
+                  Get.to(Circledatascreen());
+                },child: Icon(Icons.arrow_circle_left_rounded,color: Color(0XFF169B88),size: 28,)),
               ],
             ),
             const SizedBox(height: 10),

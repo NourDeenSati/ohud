@@ -6,7 +6,7 @@ import 'package:ohud/controllers/AbsenceController.dart';
 import 'package:ohud/screens/QRScreen.dart';
 
 class Absencescreen extends StatelessWidget {
-  final AbsenceController controller = Get.find(); // ← استخدام النسخة المُسجلة
+  final AbsenceController controller = Get.put(AbsenceController()); // ← استخدام النسخة المُسجلة
 
   Absencescreen({super.key});
   FocusNode _node = FocusNode();

@@ -6,22 +6,22 @@ import 'package:ohud/controllers/AttendanceController.dart';
 import 'package:ohud/screens/QRScreen.dart';
 
 class AttendanceScreen extends StatelessWidget {
-  final AttendanceController controller =
-      Get.find(); // ← استخدام النسخة المُسجلة
+  final AttendanceController controller = Get.put(
+    AttendanceController(),
+  ); // ← استخدام النسخة المُسجلة
   final TextEditingController textController = TextEditingController();
-
+final FocusNode _node=FocusNode();
   AttendanceScreen({super.key});
-  FocusNode _node = FocusNode();
-  void scanQR() async {
+  Future<void> scanQR() async {
+
+    _node.requestFocus();
     await Get.to(() => const QRViewExample()); // ← استخدم Get.to
+    textController.text=controller.studentId.value;
+
   }
 
   @override
   Widget build(BuildContext context) {
-    textController.text = controller.studentId.value;
-    textController.selection = TextSelection.fromPosition(
-      TextPosition(offset: textController.text.length),
-    );
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
@@ -38,9 +38,10 @@ class AttendanceScreen extends StatelessWidget {
                 Row(
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        _node.requestFocus();
-                        scanQR();
+                      onTap: ()async {
+                        await scanQR();
+
+
                       },
                       child: Container(
                         padding: const EdgeInsets.all(10),
@@ -57,21 +58,18 @@ class AttendanceScreen extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Expanded(
-                        child: TextField(
-                          focusNode: _node,
-                          keyboardType: TextInputType.number,
-                          controller: textController,
-                          onChanged: (val) => controller.updateStudentId(val),
-                          decoration: InputDecoration(
-                            label: Text('رقم الطالب'),
-                            labelStyle: TextStyle(color: Colors.black),
-                            hintText: ' أدخل رقم الطالب ',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            suffixIcon: const Icon(Icons.keyboard),
+                      child: TextField(
+                        focusNode: _node,
+                        keyboardType: TextInputType.number,
+                        controller: textController,
+                        decoration: InputDecoration(
+                          label: Text('رقم الطالب'),
+                          labelStyle: TextStyle(color: Colors.black),
+                          hintText: ' أدخل رقم الطالب ',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
+                          suffixIcon: const Icon(Icons.keyboard),
                         ),
                       ),
                     ),
@@ -148,7 +146,7 @@ class AttendanceScreen extends StatelessWidget {
                 ElevatedButton(
                   // داخل onPressed:
                   onPressed: () {
-                    if (controller.studentId.value.isEmpty ||
+                    if (controller.studentId.isEmpty ||
                         controller.AttendanceType.value.isEmpty) {
                       Get.snackbar(
                         "تحذير",

@@ -9,10 +9,11 @@ import 'package:ohud/controllers/HomeController.dart';
 import 'package:ohud/controllers/carousel_controller.dart' as my_carousel;
 import 'package:ohud/screens/AddNoteScreen.dart';
 import 'package:ohud/screens/AddPageScreen.dart';
+import 'package:ohud/screens/ArchiveScreen.dart';
 import 'package:ohud/screens/AttendanceScreen.dart';
 import 'package:ohud/screens/NotificationScreen.dart';
-import 'package:ohud/screens/SettingsScreen.dart';
-import 'package:ohud/screens/StudenstScreen.dart';
+import 'package:ohud/screens/SignInScreen.dart';
+import 'package:ohud/screens/StudentsScreen.dart';
 import 'package:ohud/screens/absenceScreen.dart';
 
 class HomeScreen extends GetView<HomeController> {
@@ -25,6 +26,15 @@ class HomeScreen extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          GestureDetector(
+            onTap: () => Get.to(SigninScreen()),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Icon(Iconsax.logout, color: Color(0XFF049977)),
+            ),
+          ),
+        ],
         title: const Text(
           'الحلقة : 1',
           style: TextStyle(
@@ -44,8 +54,8 @@ class HomeScreen extends GetView<HomeController> {
           children: [
             _MainContent(),
             StudentsScreen(),
+            Archivescreen(),
             NotificationsScreen(),
-            Settingsscreen(),
           ],
         ),
       ),
@@ -117,12 +127,13 @@ class _MainContent extends StatelessWidget {
 
             Row(
               children: [
+                Icon(Iconsax.add_square, color: Color(0XFF049977)),
+                SizedBox(width: 15),
                 const Text(
                   'التسجيل :',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 Spacer(),
-                Icon(Iconsax.add_square, color: Color(0XFF049977)),
               ],
             ),
 
@@ -151,18 +162,21 @@ class _MainContent extends StatelessWidget {
                   iconData: Iconsax.note_remove,
                   page: Absencescreen(),
                 ),
+                
               ],
             ),
             const SizedBox(height: 40),
 
             Row(
               children: [
+                Icon(Iconsax.status_up, color: Color(0XFF049977)),
+                SizedBox(width: 15),
+
                 const Text(
                   'احصائيات وبيانات :',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 Spacer(),
-                Icon(Iconsax.status_up, color: Color(0XFF049977)),
               ],
             ),
             const SizedBox(height: 40),

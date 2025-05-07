@@ -5,9 +5,8 @@ class AttendanceController extends GetxController {
   var AttendanceType = 'سلبية'.obs;
 
   void updateStudentId(String value) {
-    if (int.tryParse(value) != null) {
-      studentId.value = value;
-    }
+    studentId = value as RxString;
+   
   }
 
   void updateAttendanceType(String type) {

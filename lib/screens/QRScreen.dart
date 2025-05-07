@@ -2,12 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:ohud/controllers/AddNoteController.dart';
+import 'package:ohud/controllers/AttendanceController.dart';
+import 'package:ohud/screens/AttendanceScreen.dart';
 
-class QRViewExample extends StatelessWidget {
+class QRViewExample extends StatefulWidget {
   const QRViewExample({super.key});
 
   @override
+  State<QRViewExample> createState() => _QRViewExampleState();
+}
+
+class _QRViewExampleState extends State<QRViewExample> {
+  @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -16,13 +24,16 @@ class QRViewExample extends StatelessWidget {
           MobileScanner(
             controller: MobileScannerController(),
             onDetect: (capture) {
-              final barcode = capture.barcodes.first;
-              final value = barcode.rawValue;
 
-              if (value != null && int.tryParse(value) != null) {
-                Get.find<NoteController>().updateStudentId(value);
-                Get.back(); // ← يغلق شاشة QR فقط
-              }
+                try{
+                    final barcode = capture.barcodes.first;
+              final value = barcode.rawValue;
+                  if (value != null&&value.isNum ) {
+                    Get.find<AttendanceController>().updateStudentId(value);
+                    Navigator.pop(context);
+                }
+              }catch(e){print(e);}
+
             },
           ),
 

@@ -19,7 +19,7 @@ class MyAddContainer extends StatelessWidget {
       child: GestureDetector(
         onTap: () => Get.to(page),
         child: Container(
-          width: 78,
+        width: MediaQuery.of(context).size.width/5,
           height: 80,
           decoration: BoxDecoration(
             color: Colors.teal,

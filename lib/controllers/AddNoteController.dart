@@ -5,11 +5,11 @@ class NoteController extends GetxController {
   var noteType = 'سلبية'.obs;
   var reason = ''.obs;
 
-  void updateStudentId(String value) {
-    if (int.tryParse(value) != null) {
-      studentId.value = value;
-    }
+ void updateStudentId(String value) {
+    studentId = value as RxString;
+   
   }
+
 
   void updateNoteType(String type) {
     noteType.value = type;
