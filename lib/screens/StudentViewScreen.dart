@@ -5,7 +5,7 @@ import 'package:ohud/components/MyStudentInfo.dart';
 import 'package:ohud/components/MyStudentInfo2.dart';
 
 class Studentviewscreen extends StatelessWidget {
-  const Studentviewscreen({super.key});
+  const Studentviewscreen({super.key, required int studentId});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class Studentviewscreen extends StatelessWidget {
                 Mystudentinfo(type: 'التفقد :', info: " "),
 
                 Row(
-
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Mystudentinfo2(type: "حضور", info: "10",color: Colors.teal,),
                     Mystudentinfo2(type: "تأخر", info: "2",color: const Color.fromARGB(255, 202, 202, 0),),
@@ -54,7 +54,7 @@ class Studentviewscreen extends StatelessWidget {
                    Mystudentinfo(type: 'التسميع :', info: " "),
 
                 Row(
-
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Mystudentinfo2(type: "ممتاز", info: "10",color: Colors.teal,),
                     Mystudentinfo2(type: "جيد جداً", info: "2",color: const Color.fromARGB(255, 202, 202, 0),),

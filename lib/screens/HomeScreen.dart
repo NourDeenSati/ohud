@@ -6,6 +6,7 @@ import 'package:ohud/components/MyCarousel.dart';
 import 'package:ohud/components/MyNavigationDestination.dart';
 import 'package:ohud/components/MyStatsCard.dart';
 import 'package:ohud/controllers/HomeController.dart';
+import 'package:ohud/controllers/LogOutController.dart';
 import 'package:ohud/controllers/carousel_controller.dart' as my_carousel;
 import 'package:ohud/screens/AddNoteScreen.dart';
 import 'package:ohud/screens/AddPageScreen.dart';
@@ -15,12 +16,23 @@ import 'package:ohud/screens/NotificationScreen.dart';
 import 'package:ohud/screens/SignInScreen.dart';
 import 'package:ohud/screens/StudentsScreen.dart';
 import 'package:ohud/screens/absenceScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends GetView<HomeController> {
   HomeScreen({super.key});
 
   final MycarouselController = Get.put(my_carousel.MyCarouselController());
+  final logoutController = Get.put(LogoutController());
   final PageController pageController = PageController(viewportFraction: 0.7);
+  final HomeController homeController = HomeController();
+
+  Future<void> logout() async {
+    logoutController.logout();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+
+    Get.offAll(() => SigninScreen());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,16 +43,23 @@ class HomeScreen extends GetView<HomeController> {
             onTap: () => Get.to(SigninScreen()),
             child: Padding(
               padding: const EdgeInsets.all(12.0),
-              child: Icon(Iconsax.logout, color: Color(0XFF049977)),
+              child: GestureDetector(
+                onTap: () {
+                  logout();
+                },
+                child: Icon(Iconsax.logout, color: Color(0XFF049977)),
+              ),
             ),
           ),
         ],
-        title: const Text(
-          'الحلقة : 1',
-          style: TextStyle(
-            color: Color(0XFF049977),
-            fontSize: 25,
-            fontFamily: "IBMPlexSansArabic",
+        title: Obx(
+          () => Text(
+            'الحلقة : ${controller.circleId.value}',
+            style: TextStyle(
+              color: Color(0XFF049977),
+              fontSize: 25,
+              fontFamily: "IBMPlexSansArabic",
+            ),
           ),
         ),
         toolbarHeight: 80,
@@ -106,7 +125,7 @@ class HomeScreen extends GetView<HomeController> {
 
 class _MainContent extends StatelessWidget {
   _MainContent();
-  HomeController homeController = HomeController();
+  final HomeController homeController = Get.find<HomeController>();
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -115,9 +134,11 @@ class _MainContent extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'مرحباً بك أستاذ محمد !',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            Obx(
+              () => Text(
+                'مرحباً بك أستاذ ${homeController.userName.value} !',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
             ),
             const SizedBox(height: 40),
 
@@ -162,7 +183,6 @@ class _MainContent extends StatelessWidget {
                   iconData: Iconsax.note_remove,
                   page: Absencescreen(),
                 ),
-                
               ],
             ),
             const SizedBox(height: 40),

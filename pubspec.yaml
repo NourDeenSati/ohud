@@ -20,19 +20,29 @@ dependencies:
   http: ^1.3.0
   shared_preferences: ^2.5.3
   flutter_native_splash: ^2.4.6
+  pie_chart: ^5.4.0
+  flutter_bloc: ^9.1.1
+  quran: ^1.3.3
+  flutter_launcher_icons: ^0.14.3
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
 
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/icon.png"
 
-flutter_native_splash:
-  color: "#FFFAEEFF"
-  image: assets/images/2.png
-  android_12:
-    color: "#FFFAEEFF"
-    image: assets/images/2.png
+
+# flutter_native_splash:
+#   color: "#FFFAEEFF"
+#   image: assets/images/2.png
+#   android_12:
+#     color: "#FFFAEEFF"
+#     image: assets/images/2.png
 
 
 flutter:
@@ -42,9 +52,15 @@ flutter:
     - assets/fonts/
     - assets/images/1.png
     - assets/images/2.png
+    - assets/mushaf_assets/frame1.jpg
+    - assets/mushaf_assets/frame.jpg
+    - assets/mushaf_assets/ayah_frame.png
 
   fonts:
     - family: IBMPlexSansArabic
       fonts:
         - asset: assets/fonts/IBMPlexSansArabic-Regular.ttf
           weight: 400
+    - family: uthmani
+      fonts:
+        - asset: assets/mushaf_assets/uthmani.ttf

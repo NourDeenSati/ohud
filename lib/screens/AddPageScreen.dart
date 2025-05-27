@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:ohud/components/MyAppBar.dart';
 import 'package:ohud/controllers/AddPageController.dart';
+import 'package:ohud/mushaf/views/one_page_view.dart';
 
 class Addpagescreen extends StatelessWidget {
   final controller = Get.put(PageRegisterController());
@@ -39,8 +40,8 @@ class Addpagescreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:MyAppBar(title: 'تسجيل صفحة') 
-      ,      body: Directionality(
+      appBar: MyAppBar(title: 'تسجيل صفحة'),
+      body: Directionality(
         textDirection: TextDirection.rtl,
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -95,6 +96,12 @@ class Addpagescreen extends StatelessWidget {
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () {
+                  Get.to(
+                    OnePageView(
+                      pageNumber: int.parse(controller.pageNumber.value),
+                      studentId: controller.studentId.value,
+                    ),
+                  );
                   // تنفيذ عملية التسجيل
                 },
                 style: ElevatedButton.styleFrom(

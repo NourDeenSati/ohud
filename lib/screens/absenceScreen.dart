@@ -3,15 +3,27 @@ import 'package:get/get.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:ohud/components/MyAppBar.dart';
 import 'package:ohud/controllers/AbsenceController.dart';
-import 'package:ohud/screens/QRScreen.dart';
+import 'package:ohud/controllers/QrControllers/AbsController.dart';
+import 'package:ohud/screens/QRScreens/AbsQrScreen.dart';
 
 class Absencescreen extends StatelessWidget {
-  final AbsenceController controller = Get.put(AbsenceController()); // ← استخدام النسخة المُسجلة
+  final AbsenceController controller = Get.put(
+    AbsenceController(),
+  ); // ← استخدام النسخة المُسجلة
 
   Absencescreen({super.key});
   FocusNode _node = FocusNode();
-  void scanQR() async {
-    await Get.to(() => const QRViewExample()); // ← استخدم Get.to
+  final TextEditingController textController = TextEditingController();
+
+  Future<void> scanQR() async {
+    _node.requestFocus();
+    await Get.to(
+      () => const AbsQRViewExample(),
+      binding: BindingsBuilder(() {
+        Get.put(AbsQRScannerController());
+      }),
+    );
+    textController.text = controller.studentId.value; // بعد العودة من المسح
   }
 
   @override
@@ -32,9 +44,8 @@ class Absencescreen extends StatelessWidget {
                 Row(
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        _node.requestFocus();
-                        scanQR();
+                      onTap: () async {
+                        await scanQR();
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(left: 8.0),
@@ -54,24 +65,20 @@ class Absencescreen extends StatelessWidget {
                     ),
 
                     Expanded(
-                      child: Obx(
-                        () => TextField(
-                          focusNode: _node,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            label: Text('رقم الطالب'),
-                            labelStyle: TextStyle(color: Colors.black),
-                            hintText: ' أدخل رقم الطالب ',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            suffixIcon: const Icon(Icons.keyboard),
+                      child: TextField(
+                        focusNode: _node,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          label: Text('رقم الطالب'),
+                          labelStyle: TextStyle(color: Colors.black),
+                          hintText: ' أدخل رقم الطالب ',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          onChanged: controller.updateStudentId,
-                          controller: TextEditingController(
-                            text: controller.studentId.value,
-                          ),
+                          suffixIcon: const Icon(Icons.keyboard),
                         ),
+                        onChanged: controller.updateStudentId,
+                        controller: textController,
                       ),
                     ),
                   ],
@@ -95,11 +102,30 @@ class Absencescreen extends StatelessWidget {
                       GestureDetector(
                         onTap: () async {
                           DateTime? picked = await showDatePicker(
+                            // barrierColor: Color(0XFF000000),
                             context: context,
                             initialDate: controller.absenceDate.value,
                             firstDate: DateTime(2025),
                             lastDate: DateTime.now(),
                             locale: const Locale("ar", "SA"),
+                            builder: (BuildContext context, Widget? child) {
+                              return Theme(
+                                data: Theme.of(context).copyWith(
+                                  colorScheme: ColorScheme.light(
+                                    primary:
+                                        Colors
+                                            .teal, // اللون الأساسي (لون العنوان والسنة والأزرار)
+                                    onPrimary:
+                                        Colors
+                                            .white, // لون النص فوق اللون الأساسي
+                                    onSurface: Colors.black, // لون النص العادي
+                                  ),
+                                  dialogBackgroundColor:
+                                      Colors.white, // خلفية نافذة التاريخ
+                                ),
+                                child: child!,
+                              );
+                            },
                           );
                           if (picked != null) {
                             controller.updateAbsenceDate(picked);
@@ -172,21 +198,32 @@ class Absencescreen extends StatelessWidget {
 
                     Get.defaultDialog(
                       title: "تأكيد التسجيل",
-                      middleText:
-                          "هل أنت متأكد من أنك تريد تسجيل هذه الملاحظة؟",
+                      middleText: "هل أنت متأكد من أنك تريد تسجيل هذا التبرير",
                       textConfirm: "نعم",
                       textCancel: "إلغاء",
                       confirmTextColor: Colors.white,
-                      onConfirm: () {
-                        Get.back();
-                        Get.snackbar(
-                          "تم التسجيل",
-                          "تم تسجيل الملاحظة بنجاح",
-                          backgroundColor: Colors.green.shade100,
-                          colorText: Colors.black,
-                          snackPosition: SnackPosition.BOTTOM,
-                          duration: const Duration(seconds: 2),
-                        );
+                      onConfirm: () async {
+                        Get.back(); // إغلاق الـ Dialog
+
+                        final success = await controller.submitAttendance();
+
+                        if (success) {
+                          controller.studentId.value = '';
+                          controller.reason.value = '';
+                          controller.absenceDate.value = DateTime.now();
+                          Get.snackbar(
+                            "تم التسجيل",
+                            "الاسم: ${controller.studentId.value}\n"
+                                "التاريخ: ${controller.absenceDate.value.toLocal().toString().split(' ')[0]}\n"
+                                "المبرر: ${controller.reason.value}",
+                            backgroundColor: Colors.green.shade100,
+                            colorText: Colors.black,
+                            snackPosition: SnackPosition.BOTTOM,
+                            duration: const Duration(seconds: 4),
+                          );
+                        } else {
+                          // تم التعامل مع الخطأ داخل submitAttendance مسبقاً، لكن يمكنك إضافة Snackbar إضافي إن أحببت
+                        }
                       },
                     );
                   },

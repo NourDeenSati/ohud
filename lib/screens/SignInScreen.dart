@@ -42,9 +42,11 @@ class SigninScreen extends StatelessWidget {
                 obscure: controller.obscure.value,
                 controller: controller.passwordController,
                 suffixIcon: IconButton(
-                  icon: Icon(controller.obscure.value
-                      ? Icons.visibility
-                      : Icons.visibility_off),
+                  icon: Icon(
+                    controller.obscure.value
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                  ),
                   onPressed: controller.toggleObscure,
                 ),
               ),
@@ -53,18 +55,25 @@ class SigninScreen extends StatelessWidget {
             const SizedBox(height: 80),
 
             // زر تسجيل الدخول
-            ElevatedButton(
-              onPressed: controller.login,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xff169B88),
-                minimumSize: const Size.fromHeight(50),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-              ),
-              child: const Text(
-                'تسجيل الدخول',
-                style: TextStyle(fontSize: 18),
-              ),
+            // استبدل زر تسجيل الدخول بهذا الجزء:
+            Obx(
+              () =>
+                  controller.isLoading.value
+                      ? const Center(child: CircularProgressIndicator(color: Colors.teal,))
+                      : ElevatedButton(
+                        onPressed: controller.login,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xff169B88),
+                          minimumSize: const Size.fromHeight(50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          'تسجيل الدخول',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
             ),
           ],
         ),
@@ -82,7 +91,7 @@ class SigninScreen extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: const Color(0xff169B88)),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(5),
       ),
       child: Row(
         children: [

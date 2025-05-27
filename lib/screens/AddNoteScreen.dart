@@ -3,7 +3,8 @@ import 'package:get/get.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:ohud/components/MyAppBar.dart';
 import 'package:ohud/controllers/AddNoteController.dart';
-import 'package:ohud/screens/QRScreen.dart';
+import 'package:ohud/controllers/QrControllers/noteQRController.dart';
+import 'package:ohud/screens/QRScreens/NoteQrScreen.dart';
 
 class NoteScreen extends StatelessWidget {
   final NoteController controller = Get.put(NoteController());
@@ -14,8 +15,14 @@ class NoteScreen extends StatelessWidget {
 
   Future<void> scanQR() async {
     _node.requestFocus();
-    await Get.to(() => const QRViewExample());
+    await Get.to(
+      () => const NoteQRViewExample(),
+      binding: BindingsBuilder(() {
+        Get.put(NoteQRScannerController());
+      }),
+    );
     textController.text = controller.studentId.value;
+    controller.updateStudentId(controller.studentId.value); // ✅ مهم لتحديث القيمة
   }
 
   @override
@@ -37,7 +44,9 @@ class NoteScreen extends StatelessWidget {
                   Row(
                     children: [
                       GestureDetector(
-                        onTap: scanQR,
+                        onTap: () async {
+                          await scanQR();
+                        },
                         child: Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
@@ -57,6 +66,7 @@ class NoteScreen extends StatelessWidget {
                           controller: textController,
                           focusNode: _node,
                           keyboardType: TextInputType.number,
+                          onChanged: (val) => controller.updateStudentId(val), // ✅ مهم لتحديث القيمة
                           decoration: InputDecoration(
                             label: const Text('رقم الطالب'),
                             labelStyle: const TextStyle(color: Colors.black),
@@ -72,6 +82,7 @@ class NoteScreen extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 24),
+
                   // اختيار نوع الملاحظة
                   Obx(
                     () => Row(
@@ -124,7 +135,7 @@ class NoteScreen extends StatelessWidget {
                   // زر تسجيل الملاحظة
                   ElevatedButton(
                     onPressed: () {
-                      if (controller.studentId.isEmpty ||
+                      if (controller.studentId.value.isEmpty ||
                           controller.noteType.value.isEmpty ||
                           controller.reason.value.isEmpty) {
                         Get.snackbar(
@@ -144,23 +155,27 @@ class NoteScreen extends StatelessWidget {
                         textConfirm: "نعم",
                         textCancel: "إلغاء",
                         confirmTextColor: Colors.white,
-                        onConfirm: () {
-                          Get.back();
+                        onConfirm: () async {
+                          Get.back(); // إغلاق نافذة التأكيد
 
-                          // تنفيذ عملية التسجيل هنا (مثلاً: إرسال البيانات إلى السيرفر)
+                          final success = await controller.submitNote();
 
-                          Get.snackbar(
-                            "تم التسجيل",
-                            "تم تسجيل الملاحظة بنجاح",
-                            backgroundColor: Colors.green.shade100,
-                            colorText: Colors.black,
-                            snackPosition: SnackPosition.BOTTOM,
-                            duration: const Duration(seconds: 2),
-                          );
+                          if (success) {
+                            Get.snackbar(
+                              "تم التسجيل",
+                              "تم تسجيل الملاحظة بنجاح",
+                              backgroundColor: Colors.green.shade100,
+                              colorText: Colors.black,
+                              snackPosition: SnackPosition.BOTTOM,
+                              duration: const Duration(seconds: 2),
+                            );
 
-                          controller.studentId.value = '';
-                          controller.noteType.value = '';
-                          controller.reason.value = '';
+                            // ✅ تفريغ الحقول بعد التسجيل
+                            controller.studentId.value = '';
+                            controller.noteType.value = 'سلبية';
+                            controller.reason.value = '';
+                            textController.clear();
+                          }
                         },
                       );
                     },

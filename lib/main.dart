@@ -17,19 +17,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'Ohud App',
-      locale: const Locale('ar'), // ← تحديد اللغة الافتراضية
+      locale: const Locale('ar'),
       supportedLocales: const [Locale('en'), Locale('ar')],
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       initialBinding: HomeBinding(),
       textDirection: TextDirection.rtl, // Set entire app to RTL
       theme: Themes.customLightTheme,
-      home: HomeScreen(),
+      home: SigninScreen(),
     );
   }
 }

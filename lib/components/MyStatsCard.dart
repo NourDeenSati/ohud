@@ -35,7 +35,7 @@ class Mystatscard extends StatelessWidget {
                 ),
                 Spacer(),
                 GestureDetector(onTap: () {
-                  Get.to(Circledatascreen());
+                  Get.to(CircleDataScreen());
                 },child: Icon(Icons.arrow_circle_left_rounded,color: Color(0XFF169B88),size: 28,)),
               ],
             ),

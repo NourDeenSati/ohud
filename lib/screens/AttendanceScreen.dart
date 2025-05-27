@@ -3,21 +3,28 @@ import 'package:get/get.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:ohud/components/MyAppBar.dart';
 import 'package:ohud/controllers/AttendanceController.dart';
-import 'package:ohud/screens/QRScreen.dart';
+import 'package:ohud/controllers/QrControllers/AttenQRController.dart';
+import 'package:ohud/screens/QRScreens/AttenQRScreen.dart';
 
 class AttendanceScreen extends StatelessWidget {
   final AttendanceController controller = Get.put(
     AttendanceController(),
-  ); // ← استخدام النسخة المُسجلة
+    permanent: false,
+  );
   final TextEditingController textController = TextEditingController();
-final FocusNode _node=FocusNode();
+  final FocusNode _node = FocusNode();
+
   AttendanceScreen({super.key});
+
   Future<void> scanQR() async {
-
     _node.requestFocus();
-    await Get.to(() => const QRViewExample()); // ← استخدم Get.to
-    textController.text=controller.studentId.value;
-
+    await Get.to(
+      () => const AttenQRViewExample(),
+      binding: BindingsBuilder(() {
+        Get.put(AttenQRScannerController());
+      }),
+    );
+    textController.text = controller.studentId.value; // تحديث الحقل بعد العودة
   }
 
   @override
@@ -25,7 +32,7 @@ final FocusNode _node=FocusNode();
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: MyAppBar(title: '  تسجيل حضور'),
+        appBar: MyAppBar(title: 'تسجيل حضور'),
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -34,14 +41,12 @@ final FocusNode _node=FocusNode();
               children: [
                 const SizedBox(height: 20),
 
-                // Student ID with QR Button
+                // حقل رقم الطالب + زر QR
                 Row(
                   children: [
                     GestureDetector(
-                      onTap: ()async {
+                      onTap: () async {
                         await scanQR();
-
-
                       },
                       child: Container(
                         padding: const EdgeInsets.all(10),
@@ -58,18 +63,25 @@ final FocusNode _node=FocusNode();
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: TextField(
-                        focusNode: _node,
-                        keyboardType: TextInputType.number,
-                        controller: textController,
-                        decoration: InputDecoration(
-                          label: Text('رقم الطالب'),
-                          labelStyle: TextStyle(color: Colors.black),
-                          hintText: ' أدخل رقم الطالب ',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                      child: Obx(
+                        () => TextField(
+                          focusNode: _node,
+                          keyboardType: TextInputType.number,
+                          controller: textController
+                            ..text = controller.studentId.value
+                            ..selection = TextSelection.fromPosition(
+                              TextPosition(offset: controller.studentId.value.length),
+                            ),
+                          onChanged: (value) => controller.updateStudentId(value),
+                          decoration: InputDecoration(
+                            label: const Text('رقم الطالب'),
+                            labelStyle: const TextStyle(color: Colors.black),
+                            hintText: ' أدخل رقم الطالب ',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            suffixIcon: const Icon(Icons.keyboard),
                           ),
-                          suffixIcon: const Icon(Icons.keyboard),
                         ),
                       ),
                     ),
@@ -78,7 +90,7 @@ final FocusNode _node=FocusNode();
 
                 const SizedBox(height: 24),
 
-                // Note Type Radio Buttons
+                // اختيار النوع
                 Obx(() {
                   final now = DateTime.now();
                   final arabicWeekdays = {
@@ -97,38 +109,36 @@ final FocusNode _node=FocusNode();
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: 20),
-
+                      const SizedBox(height: 20),
                       Center(
                         child: Text(
                           ' $dayName - $formattedDate',
                           style: const TextStyle(color: Colors.grey),
                         ),
                       ),
-                      SizedBox(height: 30),
+                      const SizedBox(height: 30),
                       const Text(
                         'النوع :',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-
                       const SizedBox(height: 8),
                       Row(
                         children: [
                           const Spacer(),
                           Radio(
-                            value: 'حضور',
-                            groupValue: controller.AttendanceType.value,
-                            onChanged:
-                                (val) => controller.updateAttendanceType(val!),
+                            value: '1',
+                            groupValue: controller.attendanceType.value,
+                            onChanged: (val) =>
+                                controller.updateAttendanceType('1'),
                             activeColor: Colors.teal,
                           ),
                           const Text('حضور'),
                           const Spacer(),
                           Radio(
-                            value: 'تأخر',
-                            groupValue: controller.AttendanceType.value,
-                            onChanged:
-                                (val) => controller.updateAttendanceType(val!),
+                            value: '4',
+                            groupValue: controller.attendanceType.value,
+                            onChanged: (val) =>
+                                controller.updateAttendanceType('4'),
                             activeColor: Colors.red,
                           ),
                           const Text('تأخر'),
@@ -138,16 +148,14 @@ final FocusNode _node=FocusNode();
                     ],
                   );
                 }),
-                const SizedBox(height: 12),
 
                 const Spacer(),
 
-                // Register Button
+                // زر التسجيل
                 ElevatedButton(
-                  // داخل onPressed:
                   onPressed: () {
-                    if (controller.studentId.isEmpty ||
-                        controller.AttendanceType.value.isEmpty) {
+                    if (controller.studentId.value.isEmpty ||
+                        controller.attendanceType.value.isEmpty) {
                       Get.snackbar(
                         "تحذير",
                         "يرجى تعبئة جميع الحقول قبل التسجيل",
@@ -165,28 +173,26 @@ final FocusNode _node=FocusNode();
                       textConfirm: "نعم",
                       textCancel: "إلغاء",
                       confirmTextColor: Colors.white,
-                      onConfirm: () {
-                        Get.back(); // إغلاق الحوار
+                      onConfirm: () async {
+                        Get.back(); // إغلاق النافذة
 
-                        // تنفيذ عملية التسجيل هنا (مثلاً: إرسال البيانات إلى السيرفر)
+                        final success = await controller.submitAttendance();
 
-                        Get.snackbar(
-                          "تم التسجيل",
-                          "تم تسجيل الحضور بنجاح",
-                          backgroundColor: Colors.green.shade100,
-                          colorText: Colors.black,
-                          snackPosition: SnackPosition.BOTTOM,
-                          duration: const Duration(seconds: 2),
-                        );
-
-                        // يمكنك إعادة تعيين الحقول إذا أردت:
-                        // controller.studentId.value = '';
-                        // controller.noteType.value = '';
-                        // controller.reason.value = '';
+                        if (success) {
+                          Get.snackbar(
+                            "تم التسجيل",
+                            "تم تسجيل الحضور بنجاح",
+                            backgroundColor: Colors.green.shade100,
+                            colorText: Colors.black,
+                            snackPosition: SnackPosition.BOTTOM,
+                            duration: const Duration(seconds: 2),
+                          );
+                          controller.studentId.value = '';
+                          textController.clear();
+                        }
                       },
                     );
                   },
-
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(50),
                     backgroundColor: Colors.teal,

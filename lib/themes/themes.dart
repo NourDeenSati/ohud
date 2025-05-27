@@ -14,7 +14,11 @@ class Themes {
         fontFamily: 'IBMPlexSansArabic', // 👈 Added
       ),
     ),
+snackBarTheme: SnackBarThemeData(
+  actionTextColor: Color(0XFF000000),
+  disabledActionTextColor: Color(0XFF000000),
 
+),
     scaffoldBackgroundColor: Color(0XFFFBFBFB),
 
     iconTheme: const IconThemeData(color: Color(0XFFFFFFFF)),
