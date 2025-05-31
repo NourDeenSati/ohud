@@ -118,7 +118,7 @@ class PageCubit extends Cubit<PageStates> {
         .toString();
   }
 
-  Color containerColor({
+  List<Color> containerColor({
     required int wordOrder,
     required int lineNumber,
     required Color defaultColor,
@@ -131,21 +131,37 @@ class PageCubit extends Cubit<PageStates> {
                   note.pageNumber == pageNumber),
         )
         .isEmpty) {
-      return defaultColor;
+      return [defaultColor,defaultColor];
     }
-    Note note =
-        notes.where(
+    List<Note> currentNotes =
+        notes
+            .where(
               (note) =>
                   (note.lineNumber == lineNumber &&
                       note.wordNumber == wordOrder &&
                       note.pageNumber == pageNumber),
-            ).single;
-    if (note.falseType == FalseTypes.hafez) {
-      return Colors.red[100]!;
-    } else if (note.falseType == FalseTypes.tajweed) {
-      return Colors.green[100]!;
-    } else {
-      return Colors.black12;
+            )
+            .toList();
+    List<Color> colors = [];
+    currentNotes.forEach((element) {
+      if (element.falseType == FalseTypes.hafez) {
+        colors.add(Colors.red[100]!);
+      } else if (element.falseType == FalseTypes.tajweed) {
+        colors.add(Colors.green[100]!);
+      } else {
+        colors.add(Colors.black12);
+      }
+    });
+    if(colors.length<2)colors.add(colors[0]);
+    return colors;
+  }
+
+  void removeLastNoteOfPage() {
+    List<Note>currentNotes=notes.where((element)=>element.pageNumber==pageNumber).toList();
+    if(currentNotes.isEmpty)return ;
+    else{
+      notes.remove(currentNotes.last);
+      emit(SuccessPageState());
     }
   }
 }

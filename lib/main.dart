@@ -6,6 +6,8 @@ import 'package:ohud/screens/SignInScreen.dart';
 import 'package:ohud/themes/themes.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'mushaf/views/one_page_view.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -30,7 +32,7 @@ class MyApp extends StatelessWidget {
       initialBinding: HomeBinding(),
       textDirection: TextDirection.rtl, // Set entire app to RTL
       theme: Themes.customLightTheme,
-      home: SigninScreen(),
+      home: OnePageView(pageNumber: 60, studentId: '',),
     );
   }
 }
