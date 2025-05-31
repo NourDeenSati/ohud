@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
       initialBinding: HomeBinding(),
       textDirection: TextDirection.rtl, // Set entire app to RTL
       theme: Themes.customLightTheme,
-      home: OnePageView(pageNumber: 60, studentId: '',),
+      home: SigninScreen(),
     );
   }
 }
