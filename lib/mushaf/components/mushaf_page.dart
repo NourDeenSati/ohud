@@ -21,7 +21,7 @@ class MushafPage extends StatelessWidget {
           height: MediaQuery.of(context).size.height * 0.75,
           width: MediaQuery.of(context).size.width,
           padding: EdgeInsets.symmetric(
-            vertical: 36,
+            vertical: pageNumber <= 2 ? 110 : 36,
             horizontal: pageNumber <= 2 ? 60 : 16,
           ),
           decoration: BoxDecoration(

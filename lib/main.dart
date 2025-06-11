@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ohud/controllers/HomeController.dart';
+import 'package:ohud/mushaf/views/multi_page_view.dart';
 import 'package:ohud/screens/HomeScreen.dart';
 import 'package:ohud/screens/SignInScreen.dart';
 import 'package:ohud/themes/themes.dart';
