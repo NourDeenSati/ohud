@@ -8,6 +8,7 @@ import 'package:ohud/screens/QRScreens/AbsQrScreen.dart';
 
 class Absencescreen extends StatelessWidget {
   final AbsenceController controller = Get.put(
+    permanent: true,
     AbsenceController(),
   ); // ← استخدام النسخة المُسجلة
 
@@ -181,7 +182,7 @@ class Absencescreen extends StatelessWidget {
                 // Register Button
                 ElevatedButton(
                   // داخل onPressed:
-                  onPressed: () {
+                  onPressed: () async {
                     if (controller.studentId.value.isEmpty ||
                         controller.reason.value.isEmpty ||
                         controller.absenceDate.value == null) {
@@ -190,42 +191,30 @@ class Absencescreen extends StatelessWidget {
                         "يرجى تعبئة جميع الحقول قبل التسجيل",
                         backgroundColor: Colors.orange.shade100,
                         colorText: Colors.black,
-                        snackPosition: SnackPosition.BOTTOM,
+                        snackPosition: SnackPosition.TOP,
                         duration: const Duration(seconds: 2),
                       );
                       return;
                     }
 
-                    Get.defaultDialog(
-                      title: "تأكيد التسجيل",
-                      middleText: "هل أنت متأكد من أنك تريد تسجيل هذا التبرير",
-                      textConfirm: "نعم",
-                      textCancel: "إلغاء",
-                      confirmTextColor: Colors.white,
-                      onConfirm: () async {
-                        Get.back(); // إغلاق الـ Dialog
+                    final success = await controller.submitAttendance();
 
-                        final success = await controller.submitAttendance();
-
-                        if (success) {
-                          controller.studentId.value = '';
-                          controller.reason.value = '';
-                          controller.absenceDate.value = DateTime.now();
-                          Get.snackbar(
-                            "تم التسجيل",
-                            "الاسم: ${controller.studentId.value}\n"
-                                "التاريخ: ${controller.absenceDate.value.toLocal().toString().split(' ')[0]}\n"
-                                "المبرر: ${controller.reason.value}",
-                            backgroundColor: Colors.green.shade100,
-                            colorText: Colors.black,
-                            snackPosition: SnackPosition.BOTTOM,
-                            duration: const Duration(seconds: 4),
-                          );
-                        } else {
-                          // تم التعامل مع الخطأ داخل submitAttendance مسبقاً، لكن يمكنك إضافة Snackbar إضافي إن أحببت
-                        }
-                      },
-                    );
+                    if (success) {
+                      controller.studentId.value = '';
+                      controller.reason.value = '';
+                      controller.absenceDate.value = DateTime.now();
+                      Get.snackbar(
+                        "تم التسجيل",
+                        "الاسم: ${controller.studentId.value}\n"
+                            "التاريخ: ${controller.absenceDate.value.toLocal().toString().split(' ')[0]}\n"
+                            "المبرر: ${controller.reason.value}",
+                        colorText: Colors.black,
+                        snackPosition: SnackPosition.TOP,
+                        duration: const Duration(seconds: 2),
+                      );
+                    } else {
+                      // تم التعامل مع الخطأ داخل submitAttendance مسبقاً، لكن يمكنك إضافة Snackbar إضافي إن أحببت
+                    }
                   },
 
                   style: ElevatedButton.styleFrom(

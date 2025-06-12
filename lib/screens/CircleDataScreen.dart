@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ohud/components/MyAppBar.dart';
+import 'package:ohud/components/MyAttendancePieChart.dart';
 import 'package:ohud/components/MyHorizontalBarChart.dart';
 import 'package:ohud/components/MyStudentInfo.dart';
 import 'package:ohud/controllers/CircleDataController.dart';
@@ -14,37 +15,76 @@ class CircleDataScreen extends StatelessWidget {
       appBar: MyAppBar(title: 'احصائيات الحلقة'),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator(color: Colors.teal,));
         }
-
-        // if (controller.errorMessage.isNotEmpty) {
-        //   return Center(child: Text(controller.errorMessage.value));
-        // }
 
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Mystudentinfo(type: 'الأستاذ :', info: controller.teacherName.value),
-            Mystudentinfo(type: 'الترتيب:', info: controller.rank.value),
-            Mystudentinfo(type: 'عدد الطلاب :', info: controller.studentsCount.toString()),
-            Mystudentinfo(type: 'نسبة الحضور :', info: controller.attendanceRatio.value),
-            HorizontalBarChart(data: controller.attendanceStats),
-            Mystudentinfo(type: 'الصفحات المنجزة :', info: controller.recitationCount.toString()),
+            // مخطط الحضور
+            AttendancePieChart(data: controller.attendanceStats),
 
-            const SizedBox(height: 16),
-            Text('ترتيب الطلاب الإجمالي', style: TextStyle(fontWeight: FontWeight.bold)),
+            // معلومات عامة
+            Mystudentinfo(
+              type: 'الترتيب:',
+              info:
+                  '${controller.rank.value} من ${controller.circlesCount.value}',
+            ),
+            Mystudentinfo(
+              type: 'عدد الطلاب:',
+              info: controller.studentsCount.value.toString(),
+            ),
+            Mystudentinfo(
+              type: 'الصفحات المنجزة:',
+              info: controller.recitationCount.value.toString(),
+            ),
+            Mystudentinfo(
+              type: 'متوسط التقييم (تسميع):',
+              info: controller.recitationAvg.value.toStringAsFixed(1),
+            ),
+            Mystudentinfo(
+              type: 'عدد الأجزاء المسبورة:',
+              info: controller.sabrCount.value.toString(),
+            ),
+            Mystudentinfo(
+              type: 'متوسط تقييم السبر:',
+              info: controller.sabrAvg.value.toStringAsFixed(1),
+            ),
+
+            const SizedBox(height: 30),
+
+            // ترتيب الطلاب الإجمالي
+            Text(
+              'ترتيب الطلاب الإجمالي',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
             CustomScrollableBox(children: controller.topOverall),
 
-            const SizedBox(height: 16),
-            Text('أفضل المقرئين', style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 30),
+
+            // ترتيب التسميع
+            Text(
+              'ترتيب الحلقة بالتسميع',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
             CustomScrollableBox(children: controller.topReciters),
 
-            const SizedBox(height: 16),
-            Text('أفضل الصابرين', style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 30),
+
+            // ترتيب السبر
+            Text(
+              'ترتيب الحلقة بالسبر',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
             CustomScrollableBox(children: controller.topSabrs),
 
-            const SizedBox(height: 16),
-            Text('أفضل الحضور', style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 30),
+
+            // ترتيب الحضور
+            Text(
+              'ترتيب الحلقة بالحضور',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
             CustomScrollableBox(children: controller.topAttendees),
           ],
         );
@@ -53,6 +93,7 @@ class CircleDataScreen extends StatelessWidget {
   }
 }
 
+// صندوق تمرير لعرض التوب لست
 class CustomScrollableBox extends StatelessWidget {
   final List<Map<String, dynamic>> children;
 
@@ -60,20 +101,32 @@ class CustomScrollableBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ScrollController _scrollController = ScrollController();
+
     return Center(
       child: Container(
-        width: 300,
-        height: 200,
-        padding: EdgeInsets.all(12),
+        width: 340,
+        height: 250,
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Color(0xF5F7FBFF),
+          color: const Color.fromARGB(255, 250, 255, 255),
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Scrollbar(
-          thumbVisibility: true,
-          child: SingleChildScrollView(
-            child: Column(
-              children: children.map(_buildInnerBox).toList(),
+        child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: Scrollbar(
+            controller: _scrollController,
+            thumbVisibility: true,
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              child: Column(
+                children: children.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final student = entry.value;
+
+                  return _buildInnerBox(index, student);
+                }).toList(),
+              ),
             ),
           ),
         ),
@@ -81,20 +134,29 @@ class CustomScrollableBox extends StatelessWidget {
     );
   }
 
-  Widget _buildInnerBox(Map<String, dynamic> student) {
+  Widget _buildInnerBox(int index, Map<String, dynamic> student) {
+    final name = student['name'] ?? 'غير معروف';
+    final points = student['points']?.toString() ?? '0';
+
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 6),
-      padding: EdgeInsets.all(8),
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.all(8),
       height: 50,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.grey.shade100,
         borderRadius: BorderRadius.circular(15),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(student['name'], style: TextStyle(fontWeight: FontWeight.bold)),
-          Text(student['points'].toString(), style: TextStyle(color: Colors.grey[700])),
+          Text(
+            '${index + 1}. $name',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Text(
+            points,
+            style: TextStyle(color: Colors.grey[700]),
+          ),
         ],
       ),
     );

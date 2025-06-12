@@ -65,7 +65,7 @@ Future<bool> submitAttendance() async {
 
       Get.snackbar(
         "تم تسجيل الحضور",
-        "الاسم: $name\nالرقم: $id\nالنوع: $typeText",
+        "الاسم: $name\nالنوع: $typeText",
         snackPosition: SnackPosition.BOTTOM,
         duration: Duration(seconds: 4),
       );
@@ -77,7 +77,7 @@ Future<bool> submitAttendance() async {
       Get.snackbar("تنبيه", message,);
       return false;
     } else {
-      Get.snackbar("فشل", "فشل في إرسال الحضور: ${response.statusCode}");
+      Get.snackbar("فشل", "فشل في إرسال الحضور");
       return false;
     }
   } catch (e) {

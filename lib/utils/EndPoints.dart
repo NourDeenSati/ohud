@@ -1,5 +1,5 @@
 class APIEndpoints {
-  static final String baseUrl = 'http://192.168.23.41:8000/api/';
+  static final String baseUrl = 'http://192.168.6.41:8000/api/';
   static _AuthEndPoint authEndPoint = _AuthEndPoint();
   static _TeacherPoints teacherPoints = _TeacherPoints();
   static _AttendanceEndPoint attendanceEndPoint = _AttendanceEndPoint(); // جديد
@@ -9,11 +9,13 @@ class APIEndpoints {
 class _AuthEndPoint {
   final String login = 'teacher/login';
   final String logout = 'teacher/logout';
+
 }
 
 class _TeacherPoints {
   final String students = 'teacher/circle/students';
-  final String data = '/teacher/circle/info';
+  final String data = 'teacher/circle/info';
+  final String Archive = 'teacher/history';
 }
 
 class _AttendanceEndPoint {

@@ -34,9 +34,9 @@ class NoteController extends GetxController {
     Get.snackbar(
       "خطأ في البيانات",
       "يجب إدخال رقم الطالب، وتوضيح السبب بشكل كافٍ (5 أحرف على الأقل)",
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Get.theme.colorScheme.errorContainer,
-      colorText: Get.theme.colorScheme.onErrorContainer,
+       colorText: Colors.black,
+            snackPosition: SnackPosition.TOP,
+            duration: const Duration(seconds: 2),
     );
     return false;
   }
@@ -75,7 +75,7 @@ class NoteController extends GetxController {
     debugPrint("Response Status: ${response.statusCode}");
     debugPrint("Response Body: ${response.body}", wrapWidth: 1024);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       clearFields();
       return true;
     } else {

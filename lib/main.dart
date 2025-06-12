@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       initialBinding: HomeBinding(),
-      textDirection: TextDirection.rtl, // Set entire app to RTL
+      textDirection: TextDirection.rtl,
       theme: Themes.customLightTheme,
       home: SigninScreen(),
     );

@@ -73,7 +73,7 @@ class HomeScreen extends GetView<HomeController> {
           children: [
             _MainContent(),
             StudentsScreen(),
-            Archivescreen(),
+            ArchiveScreen(),
             NotificationsScreen(),
           ],
         ),
