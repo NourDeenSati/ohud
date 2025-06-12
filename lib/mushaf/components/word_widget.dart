@@ -42,21 +42,42 @@ class WordWidget extends StatelessWidget {
           padding: EdgeInsets.zero,
           value: FalseTypes.tashkeel,
           height: 30,
-          child: Center(child: Container(height: 30,width:60,color: Colors.black12, child: Center(child: Text("تشكيل")))),
+          child: Center(
+            child: Container(
+              height: 30,
+              width: 60,
+              color: Colors.black12,
+              child: Center(child: Text("تشكيل")),
+            ),
+          ),
         ),
         PopupMenuItem<String>(
           padding: EdgeInsets.zero,
 
           value: FalseTypes.tajweed,
           height: 30,
-          child: Center(child: Container(height: 30,width:60,color: Colors.green[100],child: Center(child: Text("تجويد")))),
+          child: Center(
+            child: Container(
+              height: 30,
+              width: 60,
+              color: Colors.green[100],
+              child: Center(child: Text("تجويد")),
+            ),
+          ),
         ),
         PopupMenuItem<String>(
           padding: EdgeInsets.zero,
 
           value: FalseTypes.hafez,
           height: 30,
-          child: Center(child: Container(height: 30,width:60,color: Colors.red[100],child: Center(child: Text("حفظ")))),
+          child: Center(
+            child: Container(
+              height: 30,
+              width: 60,
+              color: Colors.red[100],
+              child: Center(child: Text("حفظ")),
+            ),
+          ),
         ),
       ],
     );
@@ -83,13 +104,13 @@ class WordWidget extends StatelessWidget {
             '$lineNumber-$wordOrder',
           );
         }
-        Color containerColor =
+        Color defaultColor =
             isHighlighted ? Colors.yellowAccent : Colors.transparent;
 
-        containerColor = context.read<PageCubit>().containerColor(
+        List<Color> gradientColors = context.read<PageCubit>().containerColor(
           wordOrder: wordOrder,
           lineNumber: lineNumber,
-          defaultColor: containerColor,
+          defaultColor: defaultColor,
         );
 
         return GestureDetector(
@@ -97,7 +118,7 @@ class WordWidget extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
             decoration: BoxDecoration(
-              color: containerColor,
+              gradient: LinearGradient(colors: gradientColors),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(

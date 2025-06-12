@@ -48,7 +48,7 @@ class MultiPageView extends StatelessWidget {
                       return WaitingWidget();
                     }
                     return PageView.builder(
-                      reverse: true,
+                      reverse: false,
                       onPageChanged: (page) {
                         context.read<PageCubit>().changeToPage(number: page);
                       },

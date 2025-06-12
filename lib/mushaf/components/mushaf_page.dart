@@ -21,7 +21,7 @@ class MushafPage extends StatelessWidget {
           height: MediaQuery.of(context).size.height * 0.75,
           width: MediaQuery.of(context).size.width,
           padding: EdgeInsets.symmetric(
-            vertical: 36,
+            vertical: pageNumber <= 2 ? 110 : 36,
             horizontal: pageNumber <= 2 ? 60 : 16,
           ),
           decoration: BoxDecoration(
@@ -32,87 +32,90 @@ class MushafPage extends StatelessWidget {
               fit: BoxFit.fitHeight,
             ),
           ),
-          child: Column(
-            mainAxisAlignment:
-            pageNumber <= 2
-                ? MainAxisAlignment.center
-                : MainAxisAlignment.spaceBetween,
-
-            children: List.generate(
-              context.read<PageCubit>().pageLines.length,
-                  (index) => SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child:
-                context
-                    .read<PageCubit>()
-                    .pageLines[index]
-                    .lineType ==
-                    LineTypes.surahName
-                    ? Container(
-                  height: 30,
-                  width: double.infinity,
-                  decoration:
-                  pageNumber > 2
-                      ? BoxDecoration(
-                    image: DecorationImage(
-                      fit: BoxFit.fill,
-                      image: AssetImage(
-                        "assets/mushaf_assets/ayah_frame.png",
-                      ),
-                    ),
-                  )
-                      : null,
-                  child: Center(
-                    child: Text(
-                      context
-                          .read<PageCubit>()
-                          .pageLines[index]
-                          .words[0],
-                      textDirection: TextDirection.rtl,
-                      style: TextStyle(
-                        fontFamily: "uthmani",
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                )
-                    : FittedBox(
-                  fit:
+          child: FittedBox(
+            fit:BoxFit.fill,
+            child: Column(
+              mainAxisAlignment:
+              pageNumber <= 2
+                  ? MainAxisAlignment.center
+                  : MainAxisAlignment.spaceBetween,
+            
+              children: List.generate(
+                context.read<PageCubit>().pageLines.length,
+                    (index) => SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child:
                   context
                       .read<PageCubit>()
                       .pageLines[index]
-                      .isCenter
-                      ? BoxFit.scaleDown
-                      : BoxFit.contain,
-                  child: Row(
-                    children: List.generate(
-                      context
-                          .read<PageCubit>()
-                          .pageLines[index]
-                          .words
-                          .length,
-                          (wordIndex) => WordWidget(
-                        word:
+                      .lineType ==
+                      LineTypes.surahName
+                      ? Container(
+                    height: 30,
+                    width: double.infinity,
+                    decoration:
+                    pageNumber > 2
+                        ? BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit.fill,
+                        image: AssetImage(
+                          "assets/mushaf_assets/ayah_frame.png",
+                        ),
+                      ),
+                    )
+                        : null,
+                    child: Center(
+                      child: Text(
+                        context
+                            .read<PageCubit>()
+                            .pageLines[index]
+                            .words[0],
+                        textDirection: TextDirection.rtl,
+                        style: TextStyle(
+                          fontFamily: "uthmani",
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                  )
+                      : FittedBox(
+                    fit:
+                    context
+                        .read<PageCubit>()
+                        .pageLines[index]
+                        .isCenter
+                        ? BoxFit.scaleDown
+                        : BoxFit.contain,
+                    child: Row(
+                      children: List.generate(
                         context
                             .read<PageCubit>()
                             .pageLines[index]
                             .words
-                            [wordIndex],
-                        canPress:
-                        context
-                            .read<PageCubit>()
-                            .pageLines[index]
-                            .lineType ==
-                            LineTypes.normalLine,
-                        wordOrder:
-                        context
-                            .read<PageCubit>()
-                            .pageLines[index]
-                            .words
-                            .length -
-                            1 -
-                            wordIndex,
-                        lineNumber: index,
+                            .length,
+                            (wordIndex) => WordWidget(
+                          word:
+                          context
+                              .read<PageCubit>()
+                              .pageLines[index]
+                              .words
+                              [wordIndex],
+                          canPress:
+                          context
+                              .read<PageCubit>()
+                              .pageLines[index]
+                              .lineType ==
+                              LineTypes.normalLine,
+                          wordOrder:
+                          context
+                              .read<PageCubit>()
+                              .pageLines[index]
+                              .words
+                              .length -
+                              1 -
+                              wordIndex,
+                          lineNumber: index,
+                        ),
                       ),
                     ),
                   ),

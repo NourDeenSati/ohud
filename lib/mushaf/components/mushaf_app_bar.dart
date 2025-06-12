@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../page_bloc/page_cubit.dart';
 import '../page_bloc/page_states.dart';
@@ -30,7 +31,15 @@ PreferredSizeWidget mushafAppBar ( {required BuildContext context})  {
             style: TextStyle(fontSize: 18),
           );
         }
-      )
+      ),
+      BlocBuilder<PageCubit,PageStates>(
+        builder: (context,state) {
+          return IconButton(onPressed: (){
+            context.read<PageCubit>().removeLastNoteOfPage();
+          }, icon: Icon(Icons.restart_alt),color: Colors.black,);
+        },
+        buildWhen: (p,c)=>false,
+      ),
     ],
   );
 }
