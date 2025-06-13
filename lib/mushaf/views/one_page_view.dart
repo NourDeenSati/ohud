@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 
 import '../components/mushaf_app_bar.dart';
 import '../components/mushaf_page.dart';
@@ -32,39 +33,66 @@ class _OnePageViewState extends State<OnePageView> {
           widget.studentId,
         );
       },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: mushafAppBar(context: context),
-        body: SingleChildScrollView(
-          child: Center(
-            child: Column(
-              children: [
-                MushafPage(),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-                BlocBuilder<PageCubit, PageStates>(
-                  builder: (BuildContext context, state) {
-                    return OperatorButton(
-                      onPressed: () {
-                        AppFunctions.showQuranDialog(
-                          context,
-                          "هل تريد حفظ الصفحة",
-                          () {
-                            context.read<PageCubit>().savePageTest();
-                            print(context.read<PageCubit>().notes);
-                          },
-                          context.read<PageCubit>().hafezNotes(),
-                          context.read<PageCubit>().tashkeelNotes(),
-                          context.read<PageCubit>().tajweedNotes(),
-                        );
-                      },
-                      text: "حفظ التسميع",
+      child: BlocListener<PageCubit, PageStates>(
+        listener: (BuildContext context, state) {
+          if (state is FailToStartPage) {
+            Navigator.pop(context);
 
-                      enable: true,
-                    );
-                  },
-                  buildWhen: (p, c) => false,
-                ),
-              ],
+            Get.snackbar(
+              "خطأ",
+              state.error,
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Get.theme.colorScheme.errorContainer,
+              colorText: Get.theme.colorScheme.onErrorContainer,
+            );
+          }
+          if (state is FailurePageState) {
+            Get.snackbar(
+              "خطأ",
+              state.error,
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Get.theme.colorScheme.errorContainer,
+              colorText: Get.theme.colorScheme.onErrorContainer,
+            );
+          }
+        },
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: mushafAppBar(context: context),
+          body: SingleChildScrollView(
+            child: Center(
+              child: Column(
+                children: [
+                  MushafPage(),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+                  BlocBuilder<PageCubit, PageStates>(
+                    builder: (BuildContext context, state) {
+                      if (context.read<PageCubit>().isCurrent) {
+                        return OperatorButton(
+                          onPressed: () {
+                            AppFunctions.showQuranDialog(
+                              context,
+                              "هل تريد حفظ الصفحة",
+                              () {
+                                context.read<PageCubit>().savePageTest();
+                                print(context.read<PageCubit>().notes);
+                              },
+                              context.read<PageCubit>().hafezNotes(),
+                              context.read<PageCubit>().tashkeelNotes(),
+                              context.read<PageCubit>().tajweedNotes(),
+                            );
+                          },
+                          text: "حفظ التسميع",
+
+                          enable: true,
+                        );
+                      }
+                      return SizedBox();
+                    },
+                    buildWhen: (p, c) => c is ChangeListenState,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

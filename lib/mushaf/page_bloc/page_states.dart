@@ -12,8 +12,14 @@ class InitialMultiPageState extends PageStates{
 }
 
 class LoadingPageState extends PageStates {}
-
+class ChangeListenState extends PageStates{}
 class SuccessPageState extends PageStates {}
+class FailToStartPage extends PageStates {
+  final String error;
+
+  FailToStartPage({required this.error});
+
+}
 
 class FailurePageState extends PageStates {
   final String error;
