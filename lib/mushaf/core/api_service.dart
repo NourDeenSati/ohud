@@ -32,7 +32,7 @@ class ApiService {
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
-        'Accept':'application/json'
+        'Accept': 'application/json',
       },
     );
     print("YYYYYYYYYYYYYYYYYYYYYYYYYYYy");
@@ -55,7 +55,7 @@ class ApiService {
     }
   }
 
-  static Future<void> saveNotes({
+  static Future<String> saveNotes({
     required int pageNumber,
     required List<Note> notes,
     required String studentId,
@@ -72,8 +72,7 @@ class ApiService {
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
-        'Accept':'application/json'
-
+        'Accept': 'application/json',
       },
       body: jsonEncode({
         "student_id": studentId,
@@ -83,13 +82,21 @@ class ApiService {
     );
     print(response.statusCode);
     print({
-        "student_id": studentId,
-        "page": pageNumber,
-        "mistakes": Note.getObjectList(notes, isOneTest),
-  });
+      "student_id": studentId,
+      "page": pageNumber,
+      "mistakes": Note.getObjectList(notes, isOneTest),
+    });
     print(response.body);
+
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      return;
+      var responseBody = jsonDecode(response.body);
+      if (responseBody["message"] == "Validation failed.") {
+        throw CustomException(
+          responseBody["errors"]["recitation"][0] ?? "fail",
+        );
+      } else {
+        return responseBody["result"];
+      }
     } else {
       throw CustomException(ErrorCodes.noInternetConnection);
     }

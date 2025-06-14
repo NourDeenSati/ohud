@@ -10,13 +10,13 @@ class APIEndpoints {
 class _AuthEndPoint {
   final String login = 'teacher/login';
   final String logout = 'teacher/logout';
-
 }
 
 class _TeacherPoints {
   final String students = 'teacher/circle/students';
-  final String data = 'teacher/circle/info';
-  final String Archive = 'teacher/history';
+  final String data = '/teacher/circle/info';
+
+  String get archive => 'teacher/history';
 }
 
 class _AttendanceEndPoint {

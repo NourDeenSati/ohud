@@ -147,13 +147,13 @@ class PageCubit extends Cubit<PageStates> {
     if (currentDate == todayDate) {
       emit(LoadingPageState());
       try {
-        await ApiService.saveNotes(
+       String result= await ApiService.saveNotes(
           pageNumber: pageNumber,
           notes: notes,
           studentId: studentId,
           isOneTest: startPage == -1,
         );
-        emit(SuccessPageState());
+        emit(CompletedListenState(result));
       } catch (e) {
         emit(FailurePageState(error: e.toString()));
       }
