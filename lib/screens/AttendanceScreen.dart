@@ -153,7 +153,7 @@ class AttendanceScreen extends StatelessWidget {
 
                 // زر التسجيل
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: ()async {
                     if (controller.studentId.value.isEmpty ||
                         controller.attendanceType.value.isEmpty) {
                       Get.snackbar(
@@ -167,31 +167,14 @@ class AttendanceScreen extends StatelessWidget {
                       return;
                     }
 
-                    Get.defaultDialog(
-                      title: "تأكيد التسجيل",
-                      middleText: "هل أنت متأكد من أنك تريد تسجيل الحضور؟",
-                      textConfirm: "نعم",
-                      textCancel: "إلغاء",
-                      confirmTextColor: Colors.white,
-                      onConfirm: () async {
-                        Get.back(); // إغلاق النافذة
 
                         final success = await controller.submitAttendance();
 
                         if (success) {
-                          Get.snackbar(
-                            "تم التسجيل",
-                            "تم تسجيل الحضور بنجاح",
-                            backgroundColor: Colors.green.shade100,
-                            colorText: Colors.black,
-                            snackPosition: SnackPosition.BOTTOM,
-                            duration: const Duration(seconds: 2),
-                          );
+                          
                           controller.studentId.value = '';
                           textController.clear();
                         }
-                      },
-                    );
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(50),
@@ -202,6 +185,9 @@ class AttendanceScreen extends StatelessWidget {
                   ),
                   child: const Text('تسجيل'),
                 ),
+                                const Spacer(),
+                const Spacer(),
+
               ],
             ),
           ),

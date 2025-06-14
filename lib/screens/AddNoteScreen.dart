@@ -22,7 +22,9 @@ class NoteScreen extends StatelessWidget {
       }),
     );
     textController.text = controller.studentId.value;
-    controller.updateStudentId(controller.studentId.value); // ✅ مهم لتحديث القيمة
+    controller.updateStudentId(
+      controller.studentId.value,
+    ); // ✅ مهم لتحديث القيمة
   }
 
   @override
@@ -66,7 +68,10 @@ class NoteScreen extends StatelessWidget {
                           controller: textController,
                           focusNode: _node,
                           keyboardType: TextInputType.number,
-                          onChanged: (val) => controller.updateStudentId(val), // ✅ مهم لتحديث القيمة
+                          onChanged:
+                              (val) => controller.updateStudentId(
+                                val,
+                              ), // ✅ مهم لتحديث القيمة
                           decoration: InputDecoration(
                             label: const Text('رقم الطالب'),
                             labelStyle: const TextStyle(color: Colors.black),
@@ -130,11 +135,11 @@ class NoteScreen extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 50),
 
                   // زر تسجيل الملاحظة
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (controller.studentId.value.isEmpty ||
                           controller.noteType.value.isEmpty ||
                           controller.reason.value.isEmpty) {
@@ -143,41 +148,29 @@ class NoteScreen extends StatelessWidget {
                           "يرجى تعبئة جميع الحقول قبل التسجيل",
                           backgroundColor: Colors.orange.shade100,
                           colorText: Colors.black,
-                          snackPosition: SnackPosition.BOTTOM,
+                          snackPosition: SnackPosition.TOP,
                           duration: const Duration(seconds: 2),
                         );
                         return;
                       }
-                      Get.defaultDialog(
-                        title: "تأكيد التسجيل",
-                        middleText:
-                            "هل أنت متأكد من أنك تريد تسجيل هذه الملاحظة؟",
-                        textConfirm: "نعم",
-                        textCancel: "إلغاء",
-                        confirmTextColor: Colors.white,
-                        onConfirm: () async {
-                          Get.back(); // إغلاق نافذة التأكيد
 
-                          final success = await controller.submitNote();
+                      final success = await controller.submitNote();
 
-                          if (success) {
-                            Get.snackbar(
-                              "تم التسجيل",
-                              "تم تسجيل الملاحظة بنجاح",
-                              backgroundColor: Colors.green.shade100,
-                              colorText: Colors.black,
-                              snackPosition: SnackPosition.BOTTOM,
-                              duration: const Duration(seconds: 2),
-                            );
+                      if (success) {
+                        Get.snackbar(
+                          "تم التسجيل",
+                          "تم تسجيل الملاحظة بنجاح",
+                          colorText: Colors.black,
+                          snackPosition: SnackPosition.TOP,
+                          duration: const Duration(seconds: 2),
+                        );
 
-                            // ✅ تفريغ الحقول بعد التسجيل
-                            controller.studentId.value = '';
-                            controller.noteType.value = 'سلبية';
-                            controller.reason.value = '';
-                            textController.clear();
-                          }
-                        },
-                      );
+                        // ✅ تفريغ الحقول بعد التسجيل
+                        // controller.studentId.value = '';
+                        // controller.noteType.value = 'سلبية';
+                        // controller.reason.value = '';
+                        textController.clear();
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size.fromHeight(50),

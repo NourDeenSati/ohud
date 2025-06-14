@@ -9,53 +9,59 @@ class Mystatscard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: Container(
-        width: 380,
-        height: 180,
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Text(
-                  'احصائيات الحلقة : 1',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      child: Center(
+        child: GestureDetector(
+          onTap: (){
+            Get.to(CircleDataScreen());
+          },
+          child: Container(
+            width: 380,
+            height: 180,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
                 ),
-                Spacer(),
-                GestureDetector(onTap: () {
-                  Get.to(CircleDataScreen());
-                },child: Icon(Icons.arrow_circle_left_rounded,color: Color(0XFF169B88),size: 28,)),
               ],
             ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                childAspectRatio: 3.5,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-                physics: const NeverScrollableScrollPhysics(),
-                children: const [
-                  InfoTile(icon: Icons.person, text: 'الأستاذ: أحمد أحمد'),
-                  InfoTile(icon: Icons.group, text: '20 طالب'),
-                  InfoTile(icon: Icons.bubble_chart, text: 'نسبة الحضور : %70'),
-                  InfoTile(icon: Icons.menu, text: 'الصفحات المنجزة : 130'),
-                ],
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Text(
+                      'احصائيات الحلقة : 1',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    Spacer(),
+                    
+                     Icon(Icons.arrow_circle_left_rounded,color: Color(0XFF169B88),size: 28,),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Expanded(
+                  child: GridView.count(
+                    crossAxisCount: 2,
+                    childAspectRatio: 3.5,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: const [
+                      InfoTile(icon: Icons.person, text: 'الترتيب والنقاط'),
+                      InfoTile(icon: Icons.group, text: 'التسميع والسبر'),
+                      InfoTile(icon: Icons.bubble_chart, text: ' الحضور والغياب '),
+                      InfoTile(icon: Icons.menu, text: 'الملاحظات'),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
+        ),
         ),
       ),
     );

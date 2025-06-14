@@ -1,40 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:ohud/components/MyAppBar.dart';
 import 'package:ohud/controllers/AddPageController.dart';
+import 'package:ohud/controllers/QrControllers/pageQrController.dart';
 import 'package:ohud/mushaf/views/one_page_view.dart';
+import 'package:ohud/screens/QRScreens/pageQrScreen.dart';
 
 class Addpagescreen extends StatelessWidget {
   final controller = Get.put(PageRegisterController());
+  final TextEditingController textController = TextEditingController();
+  final FocusNode _node = FocusNode();
 
   Addpagescreen({super.key});
 
-  Widget buildTextField(String hint, RxString value) {
-    return TextField(
-      keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-        icon: Icon(Symbols.format_list_numbered_rtl),
-        hintText: hint,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(18)),
-      ),
-      onChanged: (val) => value.value = val,
+  Future<void> scanQR() async {
+    _node.requestFocus();
+    await Get.to(
+      () => const PageQRViewExample(),
+      binding: BindingsBuilder(() {
+        Get.put(PageQRScannerController());
+      }),
     );
-  }
-
-  Widget buildMistakeField(int index, String label) {
-    return SizedBox(
-      width: 90,
-      child: TextField(
-        keyboardType: TextInputType.number,
-        textAlign: TextAlign.center,
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        ),
-        onChanged: (val) => controller.updateMistake(index, val),
-      ),
-    );
+    textController.text = controller.studentId.value;
+    controller.updateStudentId(
+      controller.studentId.value,
+    ); // ✅ مهم لتحديث القيمة
   }
 
   @override
@@ -45,67 +37,98 @@ class Addpagescreen extends StatelessWidget {
         textDirection: TextDirection.rtl,
         child: Padding(
           padding: const EdgeInsets.all(20),
-          child: ListView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              buildTextField('أدخل رقم الطالب', controller.studentId),
-              const SizedBox(height: 12),
-              buildTextField('أدخل رقم الصفحة', controller.pageNumber),
               const SizedBox(height: 20),
-              const Text('الأخطاء'),
-              const SizedBox(height: 10),
+
+              // حقل رقم الطالب + زر QR
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  buildMistakeField(1, 'حفظ'),
-                  buildMistakeField(2, 'تجويد'),
-                  buildMistakeField(3, 'تشكيل'),
+                  GestureDetector(
+                    onTap: () async {
+                      await scanQR();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE0F2F1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Symbols.qr_code_scanner,
+                        color: Color(0xFF00695C),
+                        size: 30,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      controller: textController,
+                      focusNode: _node,
+                      keyboardType: TextInputType.number,
+                      onChanged:
+                          (val) => controller.updateStudentId(
+                            val,
+                          ), // ✅ مهم لتحديث القيمة
+                      decoration: InputDecoration(
+                        label: const Text('رقم الطالب'),
+                        labelStyle: const TextStyle(color: Colors.black),
+                        hintText: ' أدخل رقم الطالب ',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        suffixIcon: const Icon(Icons.keyboard),
+                      ),
+                    ),
+                  ),
                 ],
               ),
-              const SizedBox(height: 20),
-              const Text('التقييم'),
-              const SizedBox(height: 10),
-              Obx(
-                () => Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 30,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius: 3,
-                        offset: const Offset(0, 2),
-                        color: Colors.grey.withOpacity(0.2),
-                      ),
-                    ],
-                  ),
-                  child: Text(
-                    controller.evaluation,
-                    style: TextStyle(
-                      fontSize: 18,
-                      color:
-                          controller.evaluation == 'ممتاز'
-                              ? Colors.teal
-                              : Colors.orange,
+
+              const SizedBox(height: 40),
+
+              Expanded(
+                child: TextField(
+                  keyboardType: TextInputType.number,
+                  onChanged: (val) => controller.pageNumber.value = val,
+                  decoration: InputDecoration(
+                    suffixIcon: const Icon(Iconsax.book,),
+
+                    labelStyle: const TextStyle(color: Colors.black),
+                    label: const Text(' الصفحة'),
+                    fillColor: Colors.white,
+                    contentPadding: const EdgeInsets.all(12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 30),
+              Spacer(flex: 1,),
               ElevatedButton(
                 onPressed: () {
+                  if (controller.studentId.value.isEmpty ||
+                      controller.pageNumber.value.isEmpty) {
+                    Get.snackbar(
+                      "تحذير",
+                      "يرجى تعبئة جميع الحقول قبل التسجيل",
+                      backgroundColor: Colors.orange.shade100,
+                      colorText: Colors.black,
+                      snackPosition: SnackPosition.BOTTOM,
+                      duration: const Duration(seconds: 2),
+                    );
+                    return;
+                  }
                   Get.to(
                     OnePageView(
                       pageNumber: int.parse(controller.pageNumber.value),
                       studentId: controller.studentId.value,
                     ),
                   );
-                  // تنفيذ عملية التسجيل
                 },
                 style: ElevatedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(48),
+                  minimumSize: const Size.fromHeight(50),
                   backgroundColor: Colors.teal,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -113,6 +136,7 @@ class Addpagescreen extends StatelessWidget {
                 ),
                 child: const Text('تسجيل'),
               ),
+              Spacer(flex: 2,),
             ],
           ),
         ),

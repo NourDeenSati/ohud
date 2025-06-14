@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:ohud/models/circleModel.dart';
+import 'package:ohud/models/studentModel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../utils/EndPoints.dart';
+import '../utils/endpoints.dart';
 
 class CircleStudentsController extends GetxController {
   var isLoading = false.obs;
   var circle = ''.obs;
-  var students = <int, String>{}.obs;
+  var students = <StudentModel>[].obs;
 
   Future<void> fetchCircleData() async {
     isLoading.value = true;
@@ -26,16 +26,12 @@ class CircleStudentsController extends GetxController {
         'Authorization': 'Bearer $token',
         'Accept': 'application/json',
       });
-
-      // print(response.request);
-      // print(response.body);
-      // print(response.statusCode);
+      print(response.request);
+      print(response.body);
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         final model = CircleWithStudentsModel.fromJson(jsonData);
-
-       
 
         circle.value = model.circleName;
         students.assignAll(model.students);
@@ -44,7 +40,6 @@ class CircleStudentsController extends GetxController {
       }
     } catch (e) {
       Get.snackbar("خطأ", "حدث خطأ أثناء تحميل البيانات: $e");
-      // print(e);
     } finally {
       isLoading.value = false;
     }

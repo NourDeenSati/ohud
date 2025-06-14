@@ -34,42 +34,43 @@ class StudentsScreen extends StatelessWidget {
 
         return ListView(
           children: [
-            GestureDetector(
-              onTap: () {
-                Get.to(Awkafnamesupscreen());
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(18.0),
-                child: Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.teal),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12.0),
-                        child: Text(
-                          'ترشيح أسماء الأوقاف',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ),
-                      Icon(Symbols.mosque, color: Colors.teal),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            // GestureDetector(
+            //   onTap: () {
+            //     Get.to(Awkafnamesupscreen());
+            //   },
+            //   child: Padding(
+            //     padding: const EdgeInsets.all(18.0),
+            //     child: Container(
+            //       height: 50,
+            //       decoration: BoxDecoration(
+            //         borderRadius: BorderRadius.circular(12),
+            //         border: Border.all(color: Colors.teal),
+            //       ),
+            //       child: Row(
+            //         mainAxisAlignment: MainAxisAlignment.center,
+            //         children: [
+            //           Padding(
+            //             padding: const EdgeInsets.only(left: 12.0),
+            //             child: Text(
+            //               'ترشيح أسماء الأوقاف',
+            //               style: TextStyle(
+            //                 fontWeight: FontWeight.bold,
+            //                 fontSize: 20,
+            //               ),
+            //             ),
+            //           ),
+            //           Icon(Symbols.mosque, color: Colors.teal),
+            //         ],
+            //       ),
+            //     ),
+            //   ),
+            // ),
             // عرض الطلاب باستخدام Mystudentcontainer
-            for (var entry in controller.students.entries)
+            for (var entry in controller.students)
               Mystudentcontainer(
-                studentName: entry.value,
-                studentId: entry.key.toString(),
+                studentName: entry.name,
+                studentId: entry.id.toString(),
+                tokenId: entry.tokenId,
               ),
           ],
         );
