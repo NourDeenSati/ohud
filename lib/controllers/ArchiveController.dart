@@ -26,7 +26,7 @@ class ArchiveController extends GetxController {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
-        Uri.parse(APIEndpoints.baseUrl + APIEndpoints.teacherPoints.Archive),
+        Uri.parse(APIEndpoints.baseUrl + APIEndpoints.teacherPoints.archive),
       );
       // print('Status Code: ${response.statusCode}');
       // print('Response Body: ${response.body}');

@@ -15,6 +15,8 @@ class _AuthEndPoint {
 class _TeacherPoints {
   final String students = 'teacher/circle/students';
   final String data = '/teacher/circle/info';
+
+  String get archive => 'teacher/history';
 }
 
 class _AttendanceEndPoint {

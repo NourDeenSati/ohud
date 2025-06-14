@@ -55,6 +55,16 @@ class _OnePageViewState extends State<OnePageView> {
               colorText: Get.theme.colorScheme.onErrorContainer,
             );
           }
+          if(state is CompletedListenState){
+            Navigator.pop(context);
+            Get.snackbar(
+              "تم حفظ التسميع",
+              "التقييم ${state.result}",
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Get.theme.colorScheme.onPrimary,
+              colorText: Get.theme.colorScheme.onPrimaryContainer,
+            );
+          }
         },
         child: Scaffold(
           backgroundColor: Colors.white,

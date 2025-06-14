@@ -1,11 +1,11 @@
 class ErrorCodes{
-  static const String userIsNotRegestired="user isn't regeister";
+  static const String userIsNotRegestired="المستخدم غير مسجل";
 
-  static const String noInternetConnection="no internet connection";
+  static const String noInternetConnection="لا يوجد اتصال بالإنترنت";
 
-  static const String cannotListenThisPage="can not listen this page";
+  static const String cannotListenThisPage="لا يمكنك تسميع هذه الصفحة";
 
-  static const String orderToReListenThisPage="can not listen this page, order to re listen it";
+  static const String orderToReListenThisPage="لا يمكنك تسميع هذه الصفحة يرجى طلب إعادة التسميع من الإدارة";
 
-  static const String outOfRange="out of range";
+  static const String outOfRange="خار النطاق";
 }
