@@ -21,11 +21,16 @@ class CircleStudentsController extends GetxController {
         return;
       }
 
-      final url = Uri.parse(APIEndpoints.baseUrl + APIEndpoints.teacherPoints.students);
-      final response = await http.get(url, headers: {
-        'Authorization': 'Bearer $token',
-        'Accept': 'application/json',
-      });
+      final url = Uri.parse(
+        APIEndpoints.baseUrl + APIEndpoints.teacherPoints.students,
+      );
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
       print(response.request);
       print(response.body);
 
@@ -35,8 +40,9 @@ class CircleStudentsController extends GetxController {
 
         circle.value = model.circleName;
         students.assignAll(model.students);
-      } else {
-        Get.snackbar("خطأ", "فشل تحميل البيانات: ${response.statusCode}");
+      } else if (response.statusCode == 403) {
+
+        // Get.snackbar("عذرا");
       }
     } catch (e) {
       Get.snackbar("خطأ", "حدث خطأ أثناء تحميل البيانات: $e");

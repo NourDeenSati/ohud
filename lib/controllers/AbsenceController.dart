@@ -117,7 +117,18 @@ class AbsenceController extends GetxController {
           snackPosition: SnackPosition.BOTTOM,
         );
         return false;
-      } else {
+      } else if(response.statusCode==403){
+
+        Get.snackbar(
+          "لا يمكنك تبرير غياب طالب",
+          '',
+          colorText: Colors.black,
+          snackPosition: SnackPosition.TOP,
+        );
+        return false;
+      }
+      
+      else {
         Get.snackbar("فشل", "فشل في إرسال الحضور: ${response.statusCode}");
         return false;
       }

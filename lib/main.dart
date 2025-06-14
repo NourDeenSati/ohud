@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ohud/controllers/HomeController.dart';
-import 'package:ohud/mushaf/views/multi_page_view.dart';
 import 'package:ohud/screens/HomeScreen.dart';
 import 'package:ohud/screens/SignInScreen.dart';
 import 'package:ohud/themes/themes.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'mushaf/views/one_page_view.dart';
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-void main() {
-  runApp(const MyApp());
+  final prefs = await SharedPreferences.getInstance();
+  final bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+  runApp(MyApp(isLoggedIn: isLoggedIn));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isLoggedIn;
+  const MyApp({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +31,12 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       initialBinding: HomeBinding(),
       textDirection: TextDirection.rtl,
       theme: Themes.customLightTheme,
-      home: SigninScreen(),
+      home: isLoggedIn ? HomeScreen() : SigninScreen(),
     );
   }
 }

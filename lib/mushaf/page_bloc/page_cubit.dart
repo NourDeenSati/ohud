@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ohud/mushaf/core/api_service.dart';
+import 'package:ohud/themes/custom_exception.dart';
+import 'package:ohud/themes/error_codes.dart';
 import '../core/data.dart';
 import '../modules/line.dart';
 import '../modules/note.dart';
@@ -9,10 +12,15 @@ import 'page_states.dart';
 class PageCubit extends Cubit<PageStates> {
   int pageNumber = 3;
   List<Line> pageLines = [];
-  List<Note> notes = [];
-  int startPage = 0;
+  int startPage = -1;
+
+  List<Note> get notes => allNotes[currentDate] ?? [];
+  String currentDate = "";
+  String todayDate = "current";
   final String studentId;
-  final Set<String> _highlightedWords = {}; // For tracking highlighted words
+  final Set<String> _highlightedWords = {};
+
+  List<String> get datesValues => allNotes.keys.toList();
 
   PageCubit(Function() initialState, this.studentId) : super(initialState()) {
     if (initialState() is InitialMultiPageState) {
@@ -24,31 +32,64 @@ class PageCubit extends Cubit<PageStates> {
     initialPage();
   }
 
-  void initialPage() {
-    emit(LoadingPageState());
-    int start = -1;
-    int end = -1;
-    pageLines = [];
-    if (pageNumber == 1) {
-      start = 0;
-      end = 8;
-    } else if (pageNumber == 2) {
-      start = 8;
-      end = 16;
-    } else {
-      start = 16 + 15 * (pageNumber - 3);
-      end = 16 + 15 * (pageNumber - 3) + 15;
-    }
-    List<String> lines = mushafLines.sublist(start, end);
-    int lineNumber = 0;
-    lines.forEach((line) {
-      lineNumber++;
-      pageLines.add(
-        Line(text: line, pageNumber: pageNumber, lineNumber: lineNumber),
-      );
-    });
+  Map<String, List<Note>> allNotes = {};
 
-    emit(SuccessPageState());
+  bool get isCurrent => todayDate==currentDate;
+
+  Future<void> initialPage() async {
+    try {
+      emit(LoadingPageState());
+
+      allNotes.addAll({todayDate: []});
+      currentDate = todayDate;
+      var response = await ApiService.getDetails(
+        pageNumber: pageNumber,
+        studentId: studentId,
+      );
+      for (var listen in response) {
+
+        allNotes.addAll({
+          listen["created_at"].substring(0,15): Note.getListFromObject(
+            listen["mistakes"],
+          ),
+        });
+      }
+      print(allNotes);
+
+      print("*******************");
+      print(response);
+
+      int start = -1;
+      int end = -1;
+      pageLines = [];
+      if (pageNumber == 1) {
+        start = 0;
+        end = 8;
+      } else if (pageNumber == 2) {
+        start = 8;
+        end = 16;
+      } else {
+        start = 16 + 15 * (pageNumber - 3);
+        end = 16 + 15 * (pageNumber - 3) + 15;
+      }
+      List<String> lines = mushafLines.sublist(start, end);
+      int lineNumber = 0;
+      for (var line in lines) {
+        lineNumber++;
+        pageLines.add(
+          Line(text: line, pageNumber: pageNumber, lineNumber: lineNumber),
+        );
+      }
+
+      emit(SuccessPageState());
+    } catch (e) {
+      print(
+        "rttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt",
+      );
+      print(e.toString());
+      emit(FailToStartPage(error: e.toString()));
+      print("KKKKKKKKKKKKKKKKJJJJJJJJJJJHHHHHHHHHHHH");
+    }
   }
 
   void saveNote({
@@ -56,24 +97,30 @@ class PageCubit extends Cubit<PageStates> {
     required int wordOrder,
     required String falseType,
   }) {
-    notes.add(
-      Note(
-        pageNumber: pageNumber,
-        lineNumber: lineNumber,
-        wordNumber: wordOrder,
-        falseType: falseType,
-      ),
-    );
+    if (currentDate == todayDate) {
+      notes.add(
+        Note(
+          pageNumber: pageNumber,
+          lineNumber: lineNumber,
+          wordNumber: wordOrder,
+          falseType: falseType,
+        ),
+      );
+    }
   }
 
   void highlightWord({required int lineNumber, required int wordOrder}) {
-    _highlightedWords.add('$lineNumber-$wordOrder');
-    emit(WordHighlightPageState(highlightedWords: _highlightedWords));
+    if (currentDate == todayDate) {
+      _highlightedWords.add('$lineNumber-$wordOrder');
+      emit(WordHighlightPageState(highlightedWords: _highlightedWords));
+    }
   }
 
   void unhighlightWord({required int lineNumber, required int wordOrder}) {
-    _highlightedWords.remove('$lineNumber-$wordOrder');
-    emit(WordHighlightPageState(highlightedWords: _highlightedWords));
+    if (currentDate == todayDate) {
+      _highlightedWords.remove('$lineNumber-$wordOrder');
+      emit(WordHighlightPageState(highlightedWords: _highlightedWords));
+    }
   }
 
   bool isHighlighted(int lineNumber, int wordOrder) {
@@ -81,6 +128,7 @@ class PageCubit extends Cubit<PageStates> {
   }
 
   String surNames() {
+    if (pageNumber > 604 || pageNumber < 1) return "";
     List pagesData = quran.getPageData(pageNumber);
 
     String text = "";
@@ -95,7 +143,22 @@ class PageCubit extends Cubit<PageStates> {
     initialPage();
   }
 
-  void savePageTest() {}
+  Future<void> savePageTest() async {
+    if (currentDate == todayDate) {
+      emit(LoadingPageState());
+      try {
+        await ApiService.saveNotes(
+          pageNumber: pageNumber,
+          notes: notes,
+          studentId: studentId,
+          isOneTest: startPage == -1,
+        );
+        emit(SuccessPageState());
+      } catch (e) {
+        emit(FailurePageState(error: e.toString()));
+      }
+    }
+  }
 
   String tajweedNotes() {
     return notes
@@ -131,7 +194,7 @@ class PageCubit extends Cubit<PageStates> {
                   note.pageNumber == pageNumber),
         )
         .isEmpty) {
-      return [defaultColor,defaultColor];
+      return [defaultColor, defaultColor];
     }
     List<Note> currentNotes =
         notes
@@ -143,7 +206,7 @@ class PageCubit extends Cubit<PageStates> {
             )
             .toList();
     List<Color> colors = [];
-    currentNotes.forEach((element) {
+    for (var element in currentNotes) {
       if (element.falseType == FalseTypes.hafez) {
         colors.add(Colors.red[100]!);
       } else if (element.falseType == FalseTypes.tajweed) {
@@ -151,17 +214,26 @@ class PageCubit extends Cubit<PageStates> {
       } else {
         colors.add(Colors.black12);
       }
-    });
-    if(colors.length<2)colors.add(colors[0]);
+    }
+    if (colors.length < 2) colors.add(colors[0]);
     return colors;
   }
 
   void removeLastNoteOfPage() {
-    List<Note>currentNotes=notes.where((element)=>element.pageNumber==pageNumber).toList();
-    if(currentNotes.isEmpty)return ;
-    else{
-      notes.remove(currentNotes.last);
-      emit(SuccessPageState());
+    if (currentDate == todayDate) {
+      List<Note> currentNotes =
+          notes.where((element) => element.pageNumber == pageNumber).toList();
+      if (currentNotes.isEmpty) {
+        return;
+      } else {
+        notes.remove(currentNotes.last);
+        emit(SuccessPageState());
+      }
     }
+  }
+
+  void updateCurrentDate(String value) {
+    currentDate=value;
+    emit(ChangeListenState());
   }
 }

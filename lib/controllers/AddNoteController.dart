@@ -76,6 +76,7 @@ class NoteController extends GetxController {
     debugPrint("Response Body: ${response.body}", wrapWidth: 1024);
 
     if (response.statusCode == 201) {
+
       clearFields();
       return true;
     } else {
@@ -86,7 +87,8 @@ class NoteController extends GetxController {
       } catch (e) {
         debugPrint("Decoding error: $e");
       }
-      Get.snackbar("فشل", msg);
+      Get.snackbar("فشل", "",
+      colorText: Colors.black);
       return false;
     }
   } catch (e) {

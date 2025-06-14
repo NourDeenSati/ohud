@@ -43,7 +43,7 @@ class ArchiveController extends GetxController {
         );
         notes.value = List<Map<String, dynamic>>.from(data['notes'] ?? []);
       } else {
-        Get.snackbar("خطأ", "فشل في جلب بيانات الأرشيف");
+        // Get.snackbar("خطأ", "فشل في جلب بيانات الأرشيف");
       }
     } catch (e) {
       Get.snackbar("خطأ", "حدث خطأ أثناء الاتصال بالخادم");
