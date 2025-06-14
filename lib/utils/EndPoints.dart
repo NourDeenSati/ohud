@@ -1,5 +1,4 @@
 class APIEndpoints {
-  static final String baseUrl = 'http://192.168.6.41:8000/api/';
   static _AuthEndPoint authEndPoint = _AuthEndPoint();
   static _TeacherPoints teacherPoints = _TeacherPoints();
   static _AttendanceEndPoint attendanceEndPoint = _AttendanceEndPoint(); // جديد
