@@ -8,13 +8,13 @@ class ArchiveScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ArchiveController controller = Get.put(ArchiveController(),permanent: true);
+    final ArchiveController controller = Get.put(ArchiveController(), permanent: true);
 
     return Scaffold(
       body: GetBuilder<ArchiveController>(
         builder: (_) {
           if (controller.isLoading.value) {
-            return const Center(child: CircularProgressIndicator(color: Colors.teal,));
+            return const Center(child: CircularProgressIndicator(color: Colors.teal));
           }
 
           return Column(
@@ -42,21 +42,27 @@ class ArchiveScreen extends StatelessWidget {
                 ),
               ),
 
-              // عرض النتائج
+              // عرض النتائج مع دائرة التحديث
               Expanded(
-                child: controller.filteredItems.isEmpty
-                    ? const Center(child: Text('لا توجد سجلات للعرض'))
-                    : ListView.builder(
-                        itemCount: controller.filteredItems.length,
-                        itemBuilder: (context, index) {
-                          final item = controller.filteredItems[index];
-                          return Myarchivecontainer(
-                            type: item['type'],
-                            student: item['student'],
-                            detailes: item['details'], // تأكد أن الكلمة هي "detailes" هنا إذا كان المكون يتطلبها كذلك
-                          );
-                        },
-                      ),
+                child: RefreshIndicator(
+                  color: Colors.teal,
+                  onRefresh: () async {
+                    await controller.fetchArchiveData(); // دالة لجلب البيانات من جديد
+                  },
+                  child: controller.filteredItems.isEmpty
+                      ? const Center(child: Text('لا توجد سجلات للعرض'))
+                      : ListView.builder(
+                          itemCount: controller.filteredItems.length,
+                          itemBuilder: (context, index) {
+                            final item = controller.filteredItems[index];
+                            return Myarchivecontainer(
+                              type: item['type'],
+                              student: item['student'],
+                              detailes: item['details'], // تأكد من التهجئة حسب استخدامك في المكون
+                            );
+                          },
+                        ),
+                ),
               ),
             ],
           );

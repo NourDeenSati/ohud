@@ -1,6 +1,7 @@
 // student_controller.dart
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:ohud/utils/EndPoints.dart';
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,7 +16,7 @@ class StudentController extends GetxController {
     final token = prefs.getString('token');
       isLoading.value = true;
       final response = await http.get(
-        Uri.parse('http://192.168.6.41:8000/api/teacher/circle/students/$studentId/basic-info'),
+        Uri.parse(APIEndpoints.baseUrl+APIEndpoints.teacherPoints.studentdata  +'$studentId/basic-info'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',

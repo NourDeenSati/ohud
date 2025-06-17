@@ -87,9 +87,9 @@ class _OnePageViewState extends State<OnePageView> {
                                 context.read<PageCubit>().savePageTest();
                                 print(context.read<PageCubit>().notes);
                               },
-                              context.read<PageCubit>().hafezNotes(),
-                              context.read<PageCubit>().tashkeelNotes(),
                               context.read<PageCubit>().tajweedNotes(),
+                              context.read<PageCubit>().tashkeelNotes(),
+                              context.read<PageCubit>().hafezNotes(),
                             );
                           },
                           text: "حفظ التسميع",

@@ -15,78 +15,87 @@ class CircleDataScreen extends StatelessWidget {
       appBar: MyAppBar(title: 'احصائيات الحلقة'),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator(color: Colors.teal,));
+          return const Center(
+            child: CircularProgressIndicator(color: Colors.teal),
+          );
         }
 
-        return ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            // مخطط الحضور
-            AttendancePieChart(data: controller.attendanceStats),
+        return RefreshIndicator(
+          color: Colors.teal,
+          onRefresh: () async {
+            await controller.fetchData();
+          },
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(16),
+            children: [
+              // مخطط الحضور
+              AttendancePieChart(data: controller.attendanceStats),
 
-            // معلومات عامة
-            Mystudentinfo(
-              type: 'الترتيب:',
-              info:
-                  '${controller.rank.value} من ${controller.circlesCount.value}',
-            ),
-            Mystudentinfo(
-              type: 'عدد الطلاب:',
-              info: controller.studentsCount.value.toString(),
-            ),
-            Mystudentinfo(
-              type: 'الصفحات المنجزة:',
-              info: controller.recitationCount.value.toString(),
-            ),
-            Mystudentinfo(
-              type: 'متوسط التقييم (تسميع):',
-              info: controller.recitationAvg.value.toStringAsFixed(1),
-            ),
-            Mystudentinfo(
-              type: 'عدد الأجزاء المسبورة:',
-              info: controller.sabrCount.value.toString(),
-            ),
-            Mystudentinfo(
-              type: 'متوسط تقييم السبر:',
-              info: controller.sabrAvg.value.toStringAsFixed(1),
-            ),
+              // معلومات عامة
+              Mystudentinfo(
+                type: 'الترتيب:',
+                info:
+                    '${controller.rank.value} من ${controller.circlesCount.value}',
+              ),
+              Mystudentinfo(
+                type: 'عدد الطلاب:',
+                info: controller.studentsCount.value.toString(),
+              ),
+              Mystudentinfo(
+                type: 'الصفحات المنجزة:',
+                info: controller.recitationCount.value.toString(),
+              ),
+              Mystudentinfo(
+                type: 'متوسط التقييم (تسميع):',
+                info: controller.recitationAvg.value.toStringAsFixed(1),
+              ),
+              Mystudentinfo(
+                type: 'عدد الأجزاء المسبورة:',
+                info: controller.sabrCount.value.toString(),
+              ),
+              Mystudentinfo(
+                type: 'متوسط تقييم السبر:',
+                info: controller.sabrAvg.value.toStringAsFixed(1),
+              ),
 
-            const SizedBox(height: 30),
+              const SizedBox(height: 30),
 
-            // ترتيب الطلاب الإجمالي
-            Text(
-              'ترتيب الطلاب الإجمالي',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-            ),
-            CustomScrollableBox(children: controller.topOverall),
+              // ترتيب الطلاب الإجمالي
+              Text(
+                'ترتيب الطلاب الإجمالي',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              CustomScrollableBox(children: controller.topOverall),
 
-            const SizedBox(height: 30),
+              const SizedBox(height: 30),
 
-            // ترتيب التسميع
-            Text(
-              'ترتيب الحلقة بالتسميع',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-            ),
-            CustomScrollableBox(children: controller.topReciters),
+              // ترتيب التسميع
+              Text(
+                'ترتيب الحلقة بالتسميع',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              CustomScrollableBox(children: controller.topReciters),
 
-            const SizedBox(height: 30),
+              const SizedBox(height: 30),
 
-            // ترتيب السبر
-            Text(
-              'ترتيب الحلقة بالسبر',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-            ),
-            CustomScrollableBox(children: controller.topSabrs),
+              // ترتيب السبر
+              Text(
+                'ترتيب الحلقة بالسبر',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              CustomScrollableBox(children: controller.topSabrs),
 
-            const SizedBox(height: 30),
+              const SizedBox(height: 30),
 
-            // ترتيب الحضور
-            Text(
-              'ترتيب الحلقة بالحضور',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-            ),
-            CustomScrollableBox(children: controller.topAttendees),
-          ],
+              // ترتيب الحضور
+              Text(
+                'ترتيب الحلقة بالحضور',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              CustomScrollableBox(children: controller.topAttendees),
+            ],
+          ),
         );
       }),
     );
@@ -120,12 +129,13 @@ class CustomScrollableBox extends StatelessWidget {
             child: SingleChildScrollView(
               controller: _scrollController,
               child: Column(
-                children: children.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final student = entry.value;
+                children:
+                    children.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final student = entry.value;
 
-                  return _buildInnerBox(index, student);
-                }).toList(),
+                      return _buildInnerBox(index, student);
+                    }).toList(),
               ),
             ),
           ),
@@ -153,10 +163,7 @@ class CustomScrollableBox extends StatelessWidget {
             '${index + 1}. $name',
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          Text(
-            points,
-            style: TextStyle(color: Colors.grey[700]),
-          ),
+          Text(points, style: TextStyle(color: Colors.grey[700])),
         ],
       ),
     );

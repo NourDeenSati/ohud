@@ -46,7 +46,7 @@ class CircleDataController extends GetxController {
           'Content-Type': 'application/json',
         },
       );
-
+      print(response.request);
       print("Response Status: ${response.statusCode}");
       print("Response Body: ${response.body}");
 
@@ -79,19 +79,23 @@ class CircleDataController extends GetxController {
       studentsCount.value =
           data['studentCount'] is int ? data['studentCount'] : 0;
 
-      topOverall.value = (data['topOverall'] as List?)
+      topOverall.value =
+          (data['topOverall'] as List?)
               ?.whereType<Map<String, dynamic>>()
               .toList() ??
           [];
-      topReciters.value = (data['topReciters'] as List?)
+      topReciters.value =
+          (data['topReciters'] as List?)
               ?.whereType<Map<String, dynamic>>()
               .toList() ??
           [];
-      topSabrs.value = (data['topSabrs'] as List?)
+      topSabrs.value =
+          (data['topSabrs'] as List?)
               ?.whereType<Map<String, dynamic>>()
               .toList() ??
           [];
-      topAttendees.value = (data['topAttendees'] as List?)
+      topAttendees.value =
+          (data['topAttendees'] as List?)
               ?.whereType<Map<String, dynamic>>()
               .toList() ??
           [];

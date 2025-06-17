@@ -36,6 +36,7 @@ print(response.body);
 
       if (response.statusCode == 200 && json["message"] != null) {
         await prefs.remove('token');
+        await prefs.setBool('isLoggedIn', false);
         Get.offAll(() => SigninScreen());
         Get.snackbar("تم", json["message"], colorText: Get.theme.primaryColor);
       } else {

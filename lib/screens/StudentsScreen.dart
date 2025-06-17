@@ -10,7 +10,9 @@ class StudentsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final CircleStudentsController controller = Get.put(CircleStudentsController());
+    final CircleStudentsController controller = Get.put(
+      CircleStudentsController(),
+    );
 
     // تحميل البيانات عند بناء الصفحة
     controller.fetchCircleData();
@@ -32,47 +34,54 @@ class StudentsScreen extends StatelessWidget {
           );
         }
 
-        return ListView(
-          children: [
-            // GestureDetector(
-            //   onTap: () {
-            //     Get.to(Awkafnamesupscreen());
-            //   },
-            //   child: Padding(
-            //     padding: const EdgeInsets.all(18.0),
-            //     child: Container(
-            //       height: 50,
-            //       decoration: BoxDecoration(
-            //         borderRadius: BorderRadius.circular(12),
-            //         border: Border.all(color: Colors.teal),
-            //       ),
-            //       child: Row(
-            //         mainAxisAlignment: MainAxisAlignment.center,
-            //         children: [
-            //           Padding(
-            //             padding: const EdgeInsets.only(left: 12.0),
-            //             child: Text(
-            //               'ترشيح أسماء الأوقاف',
-            //               style: TextStyle(
-            //                 fontWeight: FontWeight.bold,
-            //                 fontSize: 20,
-            //               ),
-            //             ),
-            //           ),
-            //           Icon(Symbols.mosque, color: Colors.teal),
-            //         ],
-            //       ),
-            //     ),
-            //   ),
-            // ),
-            // عرض الطلاب باستخدام Mystudentcontainer
-            for (var entry in controller.students)
-              Mystudentcontainer(
-                studentName: entry.name,
-                studentId: entry.id.toString(),
-                tokenId: entry.tokenId,
-              ),
-          ],
+        return RefreshIndicator(
+          color: Colors.teal,
+          onRefresh: () async {
+            await controller.fetchCircleData();
+          },
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: [
+              // GestureDetector(
+              //   onTap: () {
+              //     Get.to(Awkafnamesupscreen());
+              //   },
+              //   child: Padding(
+              //     padding: const EdgeInsets.all(18.0),
+              //     child: Container(
+              //       height: 50,
+              //       decoration: BoxDecoration(
+              //         borderRadius: BorderRadius.circular(12),
+              //         border: Border.all(color: Colors.teal),
+              //       ),
+              //       child: Row(
+              //         mainAxisAlignment: MainAxisAlignment.center,
+              //         children: [
+              //           Padding(
+              //             padding: const EdgeInsets.only(left: 12.0),
+              //             child: Text(
+              //               'ترشيح أسماء الأوقاف',
+              //               style: TextStyle(
+              //                 fontWeight: FontWeight.bold,
+              //                 fontSize: 20,
+              //               ),
+              //             ),
+              //           ),
+              //           Icon(Symbols.mosque, color: Colors.teal),
+              //         ],
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              // عرض الطلاب باستخدام Mystudentcontainer
+              for (var entry in controller.students)
+                Mystudentcontainer(
+                  studentName: entry.name,
+                  studentId: entry.id.toString(),
+                  tokenId: entry.tokenId,
+                ),
+            ],
+          ),
         );
       }),
     );
@@ -92,7 +101,6 @@ class CustomScrollableBox extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
         ),
         child: Scrollbar(
-          
           thumbVisibility: true, // لإظهار مؤشر السكروول
           child: SingleChildScrollView(
             child: Column(

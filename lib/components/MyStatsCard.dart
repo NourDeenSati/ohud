@@ -35,7 +35,7 @@ class Mystatscard extends StatelessWidget {
                 Row(
                   children: [
                     const Text(
-                      'احصائيات الحلقة : 1',
+                      'احصائيات الحلقة ',
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     Spacer(),

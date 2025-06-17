@@ -51,81 +51,91 @@ class StudentViewScreen extends StatelessWidget {
       appBar: MyAppBar(title: ''),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator(
+
+            color: Colors.teal,
+          ));
         }
 
         final data = controller.studentData;
-        return ListView(
-          children: [
-            Center(
-              child: Column(
-                children: [
-                  const Icon(
-                    Symbols.person_filled_rounded,
-                    color: Color(0XFF000000),
-                    size: 100,
-                  ),
-                  Text(
-                    data['name'] ?? 'اسم غير معروف',
-                    style: const TextStyle(fontSize: 25),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Column(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      final phone = data['student_phone'] ?? '';
-                      Clipboard.setData(ClipboardData(text: phone));
-                      Get.snackbar(
-                        "تم النسخ",
-                        "تم نسخ رقم الطالب إلى الحافظة",
-                        colorText: Colors.black,
-                        snackPosition: SnackPosition.TOP,
-                        duration: const Duration(seconds: 2),
-                      );
-                    },
-                    child: Mystudentinfo(
-                      type: 'رقم الهاتف',
-                      info: data['student_phone'] ?? '',
+        return RefreshIndicator(
+          color: Colors.teal,
+          onRefresh: () async {
+          await controller.fetchStudentData(studentId);
+        },
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),   children: [
+              Center(
+                child: Column(
+                  children: [
+                    const Icon(
+                      Symbols.person_filled_rounded,
+                      color: Color(0XFF000000),
+                      size: 100,
                     ),
-                  ),
-                  Mystudentinfo(
-                    type: 'النقاط',
-                    info: data['points'].toString(),
-                  ),
-                  Mystudentinfo(
-                    type: 'الترتيب على الحلقة',
-                    info: data['rank_in_circle'].toString(),
-                  ),
-                  Mystudentinfo(
-                    type: 'الترتيب على المسجد',
-                    info: data['rank_in_mosque'].toString(),
-                  ),
-
-                  Mystudentinfo(
-                    type: 'الملاحظات الإيجابية',
-                    info: data['positive_notes'].toString(),
-                  ),
-                  Mystudentinfo(
-                    type: 'الملاحظات السلبية',
-                    info: data['negative_notes'].toString(),
-                  ),
-                  Mystudentinfo(
-                    type: 'الصفحات المسمعة ',
-                    info: data['recitations_count'].toString(),
-                  ),
-                  Mystudentinfo(
-                    type: 'الأجزاء المسبورة ',
-                    info: data['sabrs_count'].toString(),
-                  ),
-                ],
+                    Text(
+                      data['name'] ?? 'اسم غير معروف',
+                      style: const TextStyle(fontSize: 25),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        final phone = data['student_phone'] ?? '';
+                        Clipboard.setData(ClipboardData(text: phone));
+                        Get.snackbar(
+                          "تم النسخ",
+                          "تم نسخ رقم الطالب إلى الحافظة",
+                          colorText: Colors.black,
+                          snackPosition: SnackPosition.TOP,
+                          duration: const Duration(seconds: 2),
+                        );
+                      },
+                      child: Mystudentinfo(
+                        type: 'رقم الهاتف',
+                        info: data['student_phone'] ?? '',
+                      ),
+                    
+                    ),
+                    Mystudentinfo(
+                      type: 'النقاط',
+                      info: data['points'].toString(),
+                    ),
+                    Mystudentinfo(
+                      type: 'الترتيب على الحلقة',
+                      info: data['rank_in_circle'].toString(),
+                    ),
+                    Mystudentinfo(
+                      type: 'الترتيب على المسجد',
+                      info: data['rank_in_mosque'].toString(),
+                    ),
+          
+                    Mystudentinfo(
+                      type: 'الملاحظات الإيجابية',
+                      info: data['positive_notes'].toString(),
+                    ),
+                    Mystudentinfo(
+                      type: 'الملاحظات السلبية',
+                      info: data['negative_notes'].toString(),
+                    ),
+                    Mystudentinfo(
+                      type: 'الصفحات المسمعة ',
+                      info: data['recitations_count'].toString(),
+                    ),
+                    Mystudentinfo(
+                      type: 'الأجزاء المسبورة ',
+                      info: data['sabrs_count'].toString(),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         );
       }),
     );
