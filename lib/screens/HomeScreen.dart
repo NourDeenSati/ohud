@@ -4,80 +4,72 @@ import 'package:iconsax/iconsax.dart';
 import 'package:ohud/components/MyAddContainer.dart';
 import 'package:ohud/components/MyCarousel.dart';
 import 'package:ohud/components/MyNavigationDestination.dart';
-import 'package:ohud/components/MyStatsCard.dart';
+import 'package:ohud/components/MyStaticsCard.dart';
+import 'package:ohud/controllers/ArchiveController.dart';
 import 'package:ohud/controllers/HomeController.dart';
 import 'package:ohud/controllers/LogOutController.dart';
+import 'package:ohud/controllers/StudentStatsController.dart';
 import 'package:ohud/controllers/carousel_controller.dart' as my_carousel;
-import 'package:ohud/screens/AddNoteScreen.dart';
-import 'package:ohud/screens/AddPageScreen.dart';
-import 'package:ohud/screens/ArchiveScreen.dart';
-import 'package:ohud/screens/AttendanceScreen.dart';
-import 'package:ohud/screens/NotificationScreen.dart';
+import 'package:ohud/screens/SavePlane.dart';
 import 'package:ohud/screens/SignInScreen.dart';
-import 'package:ohud/screens/StudentsScreen.dart';
-import 'package:ohud/screens/absenceScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ohud/components/RecitationArchiveSheet.dart';
+import 'package:ohud/components/AttendanceArchiveSheet.dart';
+import 'package:ohud/components/NotesArchiveSheet.dart';
+import 'package:ohud/components/SabrsArchiveSheet.dart';
 
 class HomeScreen extends GetView<HomeController> {
-  HomeScreen({super.key});
+  HomeScreen({Key? key}) : super(key: key) {
+    // تأكد من تسجيل HomeController في الـ GetX
+    Get.put(HomeController());
+  }
 
-  final MycarouselController = Get.put(my_carousel.MyCarouselController());
-  final logoutController = Get.put(LogoutController());
+  final LogoutController logoutController = Get.put(LogoutController());
+  final my_carousel.MyCarouselController MycarouselController = Get.put(my_carousel.MyCarouselController());
   final PageController pageController = PageController(viewportFraction: 0.7);
-  final HomeController homeController = HomeController();
 
   Future<void> logout() async {
-    logoutController.logout();
+    await logoutController.logout();
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
-
+    await prefs.remove('name');
     Get.offAll(() => SigninScreen());
   }
 
   @override
   Widget build(BuildContext context) {
+    // خذ الـ HomeController المسجّل في GetX
+    final HomeController homeController = Get.find();
+
     return Scaffold(
       appBar: AppBar(
+        // ننقل الـ Row هنا إلى title
+        title: Obx(() => Row(
+              children: [
+                Text(
+                  'مرحباً بك ${homeController.userName.value} !',
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: Colors.black),
+                ),
+                const Spacer(),
+              ],
+            )),
+        // الـ actions تضم أيقونة تسجيل الخروج فقط
         actions: [
-          GestureDetector(
-            onTap: () => Get.to(SigninScreen()),
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: GestureDetector(
-                onTap: () {
-                  logout();
-                },
-                child: Icon(Iconsax.logout, color: Color(0XFF049977)),
-              ),
-            ),
+          IconButton(
+            icon: const Icon(Iconsax.logout, color: Color(0XFF049977)),
+            onPressed: logout,
           ),
         ],
-        title: Obx(
-          () => Text(
-            'الحلقة : ${controller.circleId.value}',
-            style: TextStyle(
-              color: Color(0XFF049977),
-              fontSize: 25,
-              fontFamily: "IBMPlexSansArabic",
-            ),
-          ),
-        ),
-        toolbarHeight: 80,
       ),
-      body: Obx(
-        () => IndexedStack(
-          index:
-              controller
-                  .currentIndex
-                  .value, // ← هذا يستخدم HomeController تلقائياً
-          children: [
-            _MainContent(),
-            StudentsScreen(),
-            Archivescreen(),
-            NotificationsScreen(),
-          ],
-        ),
-      ),
+      body: Obx(() => IndexedStack(
+            index: controller.currentIndex.value,
+            children: [
+              _MainContent(),
+              const SaveplaneScreen(),
+              const SaveplaneScreen(),
+              const SaveplaneScreen(),
+            ],
+          )),
       bottomNavigationBar: Obx(() {
         final selectedIndex = controller.currentIndex.value;
         return NavigationBar(
@@ -86,10 +78,7 @@ class HomeScreen extends GetView<HomeController> {
           onDestinationSelected: controller.changePage,
           labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
           backgroundColor: Colors.white,
-          indicatorShape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(0),
-            side: const BorderSide(color: Colors.transparent, width: 10),
-          ),
+          indicatorShape: const RoundedRectangleBorder(side: BorderSide.none),
           indicatorColor: Colors.transparent,
           destinations: [
             MyNavigationDestination(
@@ -99,20 +88,20 @@ class HomeScreen extends GetView<HomeController> {
               selectedIndex: selectedIndex,
             ),
             MyNavigationDestination(
-              icon: Iconsax.people,
-              label: 'الطلاب',
+              icon: Iconsax.cup,
+              label: 'مخطط الحفظ',
               index: 1,
               selectedIndex: selectedIndex,
             ),
             MyNavigationDestination(
-              icon: Iconsax.archive,
-              label: 'الأرشيف',
+              icon: Iconsax.shop,
+              label: 'متجر النقاط',
               index: 2,
               selectedIndex: selectedIndex,
             ),
             MyNavigationDestination(
-              icon: Iconsax.notification,
-              label: 'الاشعارات',
+              icon: Iconsax.eye,
+              label: 'متابعة النفس',
               index: 3,
               selectedIndex: selectedIndex,
             ),
@@ -124,8 +113,26 @@ class HomeScreen extends GetView<HomeController> {
 }
 
 class _MainContent extends StatelessWidget {
-  _MainContent();
+  // هنا نعرِّف الكونترولر كحقل في الكلاس
+  final StudentStatsController studentController = Get.put(
+    StudentStatsController(),
+    permanent: true,
+  );
+  final StudentArchiveController archiveCtrl = Get.put(
+    StudentArchiveController(),
+    permanent: true,
+  );
+  final LogoutController logoutController = Get.put(LogoutController());
   final HomeController homeController = Get.find<HomeController>();
+
+  _MainContent() {
+    // نستدعي بيانات الإحصائيات مرة واحدة عند إنشاء الودجت
+    Future.delayed(Duration.zero, () {
+      studentController.loadData();
+    });
+  }
+
+  
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -134,74 +141,108 @@ class _MainContent extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Obx(
-              () => Text(
-                'مرحباً بك أستاذ ${homeController.userName.value} !',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 30),
+          
 
-            // عرض الصور
-            MyCarousel(),
+            const SizedBox(height: 30),
+            const MyCarousel(),
+
+            const SizedBox(height: 40),
+            const MotivationalStatsSection(),
+
             const SizedBox(height: 40),
 
             Row(
-              children: [
+              children: const [
                 Icon(Iconsax.add_square, color: Color(0XFF049977)),
                 SizedBox(width: 15),
-                const Text(
-                  'التسجيل :',
+                Text(
+                  'الأرشيف :',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 Spacer(),
               ],
             ),
-
             const SizedBox(height: 40),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                MyAddContainer(
-                  text: 'قرآن',
-                  iconData: Iconsax.book,
-                  page: Addpagescreen(),
-                ),
+                // قرآن
+       MyAddContainer(
+  text: 'قرآن',
+  iconData: Iconsax.book,
+  onTap: () {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => const RecitationArchiveSheet(),
+    );
+  },
+),
+
+                // حضور
                 MyAddContainer(
                   text: 'حضور',
                   iconData: Iconsax.card,
-                  page: AttendanceScreen(),
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(20),
+                        ),
+                      ),
+                      builder: (_) => AttendanceArchiveSheet(),
+                    );
+                  },
                 ),
+
+                // ملاحظات
                 MyAddContainer(
                   text: 'ملاحظات',
                   iconData: Iconsax.note_text,
-                  page: NoteScreen(),
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(20),
+                        ),
+                      ),
+                      builder:
+                          (_) =>
+                              NotesArchiveSheet(), // <-- بدون const وبلا معاملات
+                    );
+                  },
                 ),
+
+                // السبر
                 MyAddContainer(
-                  text: 'تبرير غياب',
-                  iconData: Iconsax.note_remove,
-                  page: Absencescreen(),
+                  text: 'السبر',
+                  iconData: Icons.quiz_outlined,
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(20),
+                        ),
+                      ),
+                      builder: (_) => const SabrsArchiveSheet(),
+                    );
+                  },
                 ),
               ],
             ),
+
             const SizedBox(height: 40),
-
-            Row(
-              children: [
-                Icon(Iconsax.status_up, color: Color(0XFF049977)),
-                SizedBox(width: 15),
-
-                const Text(
-                  'احصائيات وبيانات :',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                Spacer(),
-              ],
-            ),
-            const SizedBox(height: 40),
-
-            Mystatscard(),
           ],
         ),
       ),

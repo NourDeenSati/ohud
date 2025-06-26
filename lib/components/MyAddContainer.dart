@@ -4,10 +4,10 @@ import 'package:get/get.dart';
 class MyAddContainer extends StatelessWidget {
   final String text;
   final IconData iconData;
-  final Widget page;
+  final VoidCallback onTap;        // ← بدل Widget page
   const MyAddContainer({
     super.key,
-    required this.page,
+    required this.onTap,
     required this.text,
     required this.iconData,
   });
@@ -17,7 +17,7 @@ class MyAddContainer extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(3.0),
       child: GestureDetector(
-        onTap: () => Get.to(page),
+        onTap: onTap,
         child: Container(
         width: MediaQuery.of(context).size.width/5,
           height: 80,

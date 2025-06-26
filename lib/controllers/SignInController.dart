@@ -49,7 +49,8 @@ class SigninController extends GetxController {
           .timeout(const Duration(seconds: 10));
 
       print("Response: ${response.body}");
-
+      print(response.request);
+      print(body);
       final json = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
