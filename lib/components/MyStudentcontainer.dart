@@ -32,7 +32,7 @@ class Mystudentcontainer extends StatelessWidget {
           );
         },
         child: Container(
-          height: 80,
+          height: 120,
           decoration: BoxDecoration(
             color: Color(0XFFFBFBFB),
             borderRadius: BorderRadius.circular(15),
@@ -45,13 +45,15 @@ class Mystudentcontainer extends StatelessWidget {
               ),
             ],
           ),
-          padding: EdgeInsets.all(8),
+          padding: EdgeInsets.all(16),
           child: Row(
             children: [
+              
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(studentName, style: TextStyle(fontSize: 25)),
+                  Spacer(),
                   Text("الرقم : $tokenId", style: TextStyle(fontSize: 15)),
                 ],
               ),

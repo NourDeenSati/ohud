@@ -9,6 +9,7 @@ class CircleStudentsController extends GetxController {
   var isLoading = false.obs;
   var circle = ''.obs;
   var students = <StudentModel>[].obs;
+  var searchQuery = ''.obs;
 
   Future<void> fetchCircleData() async {
     isLoading.value = true;
@@ -41,7 +42,6 @@ class CircleStudentsController extends GetxController {
         circle.value = model.circleName;
         students.assignAll(model.students);
       } else if (response.statusCode == 403) {
-
         // Get.snackbar("عذرا");
       }
     } catch (e) {
@@ -49,5 +49,12 @@ class CircleStudentsController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  List<StudentModel> get filteredStudents {
+    if (searchQuery.isEmpty) return students;
+    return students.where((s) =>
+      s.name.toLowerCase().contains(searchQuery.value.toLowerCase())
+    ).toList();
   }
 }

@@ -165,7 +165,7 @@ class _MainContent extends StatelessWidget {
               children: [
                 MyAddContainer(
                   text: 'قرآن',
-                  iconData: Iconsax.book,
+                  iconData: Icons.menu_book_rounded,
                   page: Addpagescreen(),
                 ),
                 MyAddContainer(

@@ -38,14 +38,6 @@ flutter_icons:
   image_path: "assets/images/icon.png"
 
 
-# flutter_native_splash:
-#   color: "#FFFAEEFF"
-#   image: assets/images/2.png
-#   android_12:
-#     color: "#FFFAEEFF"
-#     image: assets/images/2.png
-
-
 flutter:
   uses-material-design: true
 

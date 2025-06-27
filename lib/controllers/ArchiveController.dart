@@ -28,9 +28,9 @@ class ArchiveController extends GetxController {
         },
         Uri.parse(APIEndpoints.baseUrl + APIEndpoints.teacherPoints.archive),
       );
-      // print('Status Code: ${response.statusCode}');
-      // print('Response Body: ${response.body}');
-      // print('Request URL: ${response.request?.url}');
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+      print('Request URL: ${response.request?.url}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -81,17 +81,17 @@ class ArchiveController extends GetxController {
     }
 
     if (selectedType == 'الكل' || selectedType == 'تسجيل ملاحظة') {
-      items.addAll(
-        notes.map(
-          (e) => {
-            'type': 'تسجيل ملاحظة',
-            'student': e['student_name'] ?? 'غير معروف',
-            'details':
-                "${e['note'] ?? 'بدون تفاصيل'} - ${e['created_at'] ?? ''}",
-          },
-        ),
-      );
-    }
+  items.addAll(
+    notes.map(
+      (e) => {
+        'type': 'تسجيل ملاحظة',
+        'student': e['student_name'] ?? 'غير معروف',
+        'details':
+            "${_convertNoteType(e['type'])} - ${e['updated_at'] ?? ''}",
+      },
+    ),
+  );
+}
 
     return items;
   }
@@ -105,5 +105,15 @@ class ArchiveController extends GetxController {
   void onInit() {
     super.onInit();
     fetchArchiveData();
+  }
+}
+String _convertNoteType(String? type) {
+  switch (type) {
+    case 'positive':
+      return 'ملاحظة إيجابية';
+    case 'negative':
+      return 'ملاحظة سلبية';
+    default:
+      return 'ملاحظة غير معروفة';
   }
 }

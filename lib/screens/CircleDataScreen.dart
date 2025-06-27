@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ohud/components/MyAppBar.dart';
 import 'package:ohud/components/MyAttendancePieChart.dart';
-import 'package:ohud/components/MyHorizontalBarChart.dart';
 import 'package:ohud/components/MyStudentInfo.dart';
 import 'package:ohud/controllers/CircleDataController.dart';
 
@@ -38,10 +37,10 @@ class CircleDataScreen extends StatelessWidget {
                 info:
                     '${controller.rank.value} من ${controller.circlesCount.value}',
               ),
-              Mystudentinfo(
-                type: 'عدد الطلاب:',
-                info: controller.studentsCount.value.toString(),
-              ),
+              // Mystudentinfo(
+              //   type: 'عدد الطلاب:',
+              //   info: controller.studentsCount.value.toString(),
+              // ),
               Mystudentinfo(
                 type: 'الصفحات المنجزة:',
                 info: controller.recitationCount.value.toString(),
