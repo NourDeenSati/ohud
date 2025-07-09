@@ -29,7 +29,7 @@ class _OnePageViewState extends State<OnePageView> {
     return BlocProvider(
       create: (BuildContext context) {
         return PageCubit(
-          () => InitialOnePageState(pageNumber: widget.pageNumber),
+              () => InitialOnePageState(pageNumber: widget.pageNumber),
           widget.studentId,
         );
       },
@@ -55,7 +55,7 @@ class _OnePageViewState extends State<OnePageView> {
               colorText: Get.theme.colorScheme.onErrorContainer,
             );
           }
-          if(state is CompletedListenState){
+          if (state is CompletedListenState) {
             Navigator.pop(context);
             Get.snackbar(
               "تم حفظ التسميع",
@@ -74,21 +74,45 @@ class _OnePageViewState extends State<OnePageView> {
               child: Column(
                 children: [
                   MushafPage(),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+                  SizedBox(height: MediaQuery
+                      .of(context)
+                      .size
+                      .height * 0.01),
+                  BlocBuilder<PageCubit, PageStates>(
+                    builder: (context, state) {
+                      return Text(
+                        context.read<PageCubit>().studentName,
+                        textDirection: TextDirection.rtl,
+                        overflow: TextOverflow.ellipsis,
+
+                        style: TextStyle(fontSize:context.read<PageCubit>().surNames().length>10?13: 16),
+                      );
+                    },
+                  ),
+                  SizedBox(height: MediaQuery
+                      .of(context)
+                      .size
+                      .height * 0.008),
+
                   BlocBuilder<PageCubit, PageStates>(
                     builder: (BuildContext context, state) {
-                      if (context.read<PageCubit>().isCurrent) {
+                      if (context
+                          .read<PageCubit>()
+                          .isCurrent) {
                         return OperatorButton(
                           onPressed: () {
                             AppFunctions.showQuranDialog(
                               context,
                               "هل تريد حفظ الصفحة",
-                              () {
+                                  () {
                                 context.read<PageCubit>().savePageTest();
-                                print(context.read<PageCubit>().notes);
+                                print(context
+                                    .read<PageCubit>()
+                                    .notes);
                               },
                               context.read<PageCubit>().tajweedNotes(),
                               context.read<PageCubit>().tashkeelNotes(),
+
                               context.read<PageCubit>().hafezNotes(),
                             );
                           },
@@ -110,3 +134,4 @@ class _OnePageViewState extends State<OnePageView> {
     );
   }
 }
+

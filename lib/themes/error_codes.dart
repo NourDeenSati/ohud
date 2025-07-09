@@ -7,5 +7,5 @@ class ErrorCodes{
 
   static const String orderToReListenThisPage="لا يمكنك تسميع هذه الصفحة يرجى طلب إعادة التسميع من الإدارة";
 
-  static const String outOfRange="خار النطاق";
+  static const String outOfRange="خارج النطاق";
 }

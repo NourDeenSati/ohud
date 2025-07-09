@@ -34,7 +34,9 @@ class PageCubit extends Cubit<PageStates> {
 
   Map<String, List<Note>> allNotes = {};
 
-  bool get isCurrent => todayDate==currentDate;
+   String studentName = "";
+
+  bool get isCurrent => todayDate == currentDate;
 
   Future<void> initialPage() async {
     try {
@@ -42,53 +44,47 @@ class PageCubit extends Cubit<PageStates> {
 
       allNotes.addAll({todayDate: []});
       currentDate = todayDate;
-      var response = await ApiService.getDetails(
+    /*  var response = await ApiService.getDetails(
         pageNumber: pageNumber,
         studentId: studentId,
       );
-      for (var listen in response) {
-
+      studentName = response.keys.single;
+      for (var listen in response.values.single) {
         allNotes.addAll({
-          listen["created_at"].substring(0,15): Note.getListFromObject(
+          listen["created_at"].substring(0, 15): Note.getListFromObject(
             listen["mistakes"],
           ),
         });
-      }
-      print(allNotes);
-
-      print("*******************");
-      print(response);
-
-      int start = -1;
-      int end = -1;
-      pageLines = [];
-      if (pageNumber == 1) {
-        start = 0;
-        end = 8;
-      } else if (pageNumber == 2) {
-        start = 8;
-        end = 16;
-      } else {
-        start = 16 + 15 * (pageNumber - 3);
-        end = 16 + 15 * (pageNumber - 3) + 15;
-      }
-      List<String> lines = mushafLines.sublist(start, end);
-      int lineNumber = 0;
-      for (var line in lines) {
-        lineNumber++;
-        pageLines.add(
-          Line(text: line, pageNumber: pageNumber, lineNumber: lineNumber),
-        );
-      }
+      }*/
+      getPageData();
 
       emit(SuccessPageState());
     } catch (e) {
-      print(
-        "rttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt",
-      );
-      print(e.toString());
       emit(FailToStartPage(error: e.toString()));
-      print("KKKKKKKKKKKKKKKKJJJJJJJJJJJHHHHHHHHHHHH");
+    }
+  }
+
+  void getPageData() {
+    int start = -1;
+    int end = -1;
+    pageLines = [];
+    if (pageNumber == 1) {
+      start = 0;
+      end = 8;
+    } else if (pageNumber == 2) {
+      start = 8;
+      end = 16;
+    } else {
+      start = 16 + 15 * (pageNumber - 3);
+      end = 16 + 15 * (pageNumber - 3) + 15;
+    }
+    List<String> lines = mushafLines.sublist(start, end);
+    int lineNumber = 0;
+    for (var line in lines) {
+      lineNumber++;
+      pageLines.add(
+        Line(text: line, pageNumber: pageNumber, lineNumber: lineNumber),
+      );
     }
   }
 
@@ -140,14 +136,15 @@ class PageCubit extends Cubit<PageStates> {
 
   void changeToPage({required int number}) {
     pageNumber = startPage + number;
-    initialPage();
+    getPageData();
+    emit(SuccessPageState());
   }
 
   Future<void> savePageTest() async {
     if (currentDate == todayDate) {
       emit(LoadingPageState());
       try {
-       String result= await ApiService.saveNotes(
+        String result = await ApiService.saveNotes(
           pageNumber: pageNumber,
           notes: notes,
           studentId: studentId,
@@ -233,7 +230,7 @@ class PageCubit extends Cubit<PageStates> {
   }
 
   void updateCurrentDate(String value) {
-    currentDate=value;
+    currentDate = value;
     emit(ChangeListenState());
   }
 }

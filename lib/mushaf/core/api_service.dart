@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../themes/error_codes.dart';
 
 class ApiService {
-  static Future<List> getDetails({
+  static Future<Map<String,List>> getDetails({
     required int pageNumber,
     required String studentId,
   }) async {
@@ -48,7 +48,7 @@ class ApiService {
         }
       } else {
         print(body);
-        return body["details"][0]["recitations"];
+        return {body["student_name"]:body["details"][0]["recitations"]};
       }
     } else {
       throw CustomException(ErrorCodes.noInternetConnection);
@@ -81,11 +81,11 @@ class ApiService {
       }),
     );
     print(response.statusCode);
-    print({
+    print( jsonEncode({
       "student_id": studentId,
       "page": pageNumber,
       "mistakes": Note.getObjectList(notes, isOneTest),
-    });
+    }));
     print(response.body);
 
     if (response.statusCode >= 200 && response.statusCode < 300) {

@@ -14,119 +14,136 @@ class MushafPage extends StatelessWidget {
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.75,
       width: MediaQuery.of(context).size.width,
-      child: BlocBuilder<PageCubit,PageStates>(
-        builder: (context,state) {
-          if(state is LoadingPageState){
-            return Center(child: CircularProgressIndicator(color: Colors.teal,));
+      child: BlocBuilder<PageCubit, PageStates>(
+        builder: (context, state) {
+          if (state is LoadingPageState) {
+            return Center(child: CircularProgressIndicator(color: Colors.teal));
           }
-          final int pageNumber=context.read<PageCubit>().pageNumber;
+          final int pageNumber = context.read<PageCubit>().pageNumber;
           return Container(
-
             padding: EdgeInsets.symmetric(
-              vertical: pageNumber <= 2 ? 130 : 36,
-              horizontal: pageNumber <= 2 ? 60 : 16,
+              vertical:
+                  pageNumber <= 2
+                      ? MediaQuery.of(context).size.width * 0.25
+                      : MediaQuery.of(context).size.width * 0.08,
+              horizontal:
+                  pageNumber <= 2
+                      ? MediaQuery.of(context).size.width * 0.01
+                      : MediaQuery.of(context).size.width * 0.03,
             ),
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage(
-                  "assets/mushaf_assets/frame${pageNumber <= 2 ? "1" : ""}.jpg",
+                  "assets/mushaf_assets/frame${pageNumber <= 2 ? "1" : "_t"}.jpg",
                 ),
-                fit: BoxFit.fitHeight,
+                fit: BoxFit.fill,
               ),
             ),
             child: FittedBox(
-              fit:BoxFit.fill,
+              fit: BoxFit.fill,
               child: Column(
                 mainAxisAlignment:
-                pageNumber <= 2
-                    ? MainAxisAlignment.center
-                    : MainAxisAlignment.spaceBetween,
+                    pageNumber <= 2
+                        ? MainAxisAlignment.center
+                        : MainAxisAlignment.spaceBetween,
 
                 children: List.generate(
                   context.read<PageCubit>().pageLines.length,
-                      (index) => SizedBox(
+                  (index) => SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child:
-                    context
-                        .read<PageCubit>()
-                        .pageLines[index]
-                        .lineType ==
-                        LineTypes.surahName
-                        ? Container(
-                      height: 30,
-                      width: double.infinity,
-                      decoration:
-                      pageNumber > 2
-                          ? BoxDecoration(
-                        image: DecorationImage(
-                          fit: BoxFit.fill,
-                          image: AssetImage(
-                            "assets/mushaf_assets/ayah_frame.png",
-                          ),
-                        ),
-                      )
-                          : null,
-                      child: Center(
-                        child: Text(
-                          context
-                              .read<PageCubit>()
-                              .pageLines[index]
-                              .words[0],
-                          textDirection: TextDirection.rtl,
-                          style: TextStyle(
-                            fontFamily: "uthmani",
-                            fontSize: 18,
-                          ),
-                        ),
-                      ),
-                    )
-                        : FittedBox(
-                      fit:
-                      context
-                          .read<PageCubit>()
-                          .pageLines[index]
-                          .isCenter
-                          ? BoxFit.scaleDown
-                          : BoxFit.contain,
-                      child: Row(
-                        children: List.generate(
-                          context
-                              .read<PageCubit>()
-                              .pageLines[index]
-                              .words
-                              .length,
-                              (wordIndex) => WordWidget(
-                            word:
-                            context
-                                .read<PageCubit>()
-                                .pageLines[index]
-                                .words
-                                [wordIndex],
-                            canPress:
-                            context
-                                .read<PageCubit>()
-                                .pageLines[index]
-                                .lineType ==
-                                LineTypes.normalLine,
-                            wordOrder:
-                            context
-                                .read<PageCubit>()
-                                .pageLines[index]
-                                .words
-                                .length -
-                                1 -
-                                wordIndex,
-                            lineNumber: index,
-                          ),
-                        ),
-                      ),
-                    ),
+                        context.read<PageCubit>().pageLines[index].lineType ==
+                                LineTypes.surahName
+                            ? Container(
+                              height: 30,
+                              width: double.infinity,
+                              decoration:
+                                  pageNumber > 2
+                                      ? BoxDecoration(
+                                        image: DecorationImage(
+                                          fit: BoxFit.fill,
+                                          image: AssetImage(
+                                            "assets/mushaf_assets/ayah_frame.png",
+                                          ),
+                                        ),
+                                      )
+                                      : null,
+                              child: Center(
+                                child: FittedBox(
+                                  child: Text(
+                                    textScaler: MediaQuery.of(
+                                      context,
+                                    ).textScaler.clamp(
+                                      minScaleFactor: 40,
+                                      maxScaleFactor: 50,
+                                    ),
+                                    context
+                                        .read<PageCubit>()
+                                        .pageLines[index]
+                                        .words[0],
+                                    textDirection: TextDirection.rtl,
+                                    style: TextStyle(fontFamily: "uthmani"),
+                                  ),
+                                ),
+                              ),
+                            )
+                            : Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal:
+                                context
+                                    .read<PageCubit>()
+                                    .pageLines[index]
+                                    .isShort()
+                                        ? 200
+                                        : 0,
+                              ),
+                              child: FittedBox(
+                                fit:
+                                    context
+                                            .read<PageCubit>()
+                                            .pageLines[index]
+                                            .isCenter
+                                        ? BoxFit.scaleDown
+                                        : BoxFit.contain,
+                                child: Row(
+                                  children: List.generate(
+                                    context
+                                        .read<PageCubit>()
+                                        .pageLines[index]
+                                        .words
+                                        .length,
+                                    (wordIndex) => WordWidget(
+                                      word:
+                                          context
+                                              .read<PageCubit>()
+                                              .pageLines[index]
+                                              .words[wordIndex],
+                                      canPress:
+                                          context
+                                              .read<PageCubit>()
+                                              .pageLines[index]
+                                              .lineType ==
+                                          LineTypes.normalLine,
+                                      wordOrder:
+                                          context
+                                              .read<PageCubit>()
+                                              .pageLines[index]
+                                              .words
+                                              .length -
+                                          1 -
+                                          wordIndex,
+                                      lineNumber: index,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                   ),
                 ),
               ),
             ),
           );
-        }
+        },
       ),
     );
   }
