@@ -44,6 +44,9 @@ flutter:
   assets:
     - assets/fonts/
     - assets/images/1.png
+    - assets/images/11.png
+    - assets/images/111.png
+
     - assets/images/2.png
     - assets/mushaf_assets/frame1.jpg
     - assets/mushaf_assets/frame.jpg

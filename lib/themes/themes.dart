@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class Themes {
   static ThemeData customLightTheme = ThemeData.light().copyWith(
-    primaryColor: const Color(0XFF049977),
+    primaryColor: const Color(0xFF049977),
     appBarTheme: const AppBarTheme(
       surfaceTintColor: Color(0XFFFBFBFB),
       color: Color(0XFFFBFBFB),

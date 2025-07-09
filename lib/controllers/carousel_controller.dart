@@ -5,8 +5,8 @@ class MyCarouselController extends GetxController {
 
   List<String> imagePaths = [
     'assets/images/1.png',
-    'assets/images/1.png',
-    'assets/images/1.png',
+    'assets/images/11.png',
+    'assets/images/111.png',
   ];
 
   void setCurrentIndex(int index) {

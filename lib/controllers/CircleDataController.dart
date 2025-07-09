@@ -35,65 +35,91 @@ class CircleDataController extends GetxController {
       isLoading.value = true;
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
-      if (token == null) throw Exception("لم يتم العثور على التوكن");
+      if (token == null) throw Exception("❌ لم يتم العثور على التوكن");
 
       final headers = {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       };
 
-      // Get Top Rankings
+      /// -------------------- Get Top Rankings --------------------
       final topRes = await http.get(
         Uri.parse('${APIEndpoints.baseUrl}teacher/circle/top'),
         headers: headers,
       );
-      final topData = jsonDecode(topRes.body);
-      topOverall.value = (topData['topOverall'] as List).cast<Map<String, dynamic>>();
-      topReciters.value = (topData['topReciters'] as List).cast<Map<String, dynamic>>();
-      topSabrs.value = (topData['topSabrs'] as List).cast<Map<String, dynamic>>();
-      topAttendees.value = (topData['topAttendees'] as List).cast<Map<String, dynamic>>();
+      print("📦 [Top Rankings] Status: ${topRes.statusCode}");
+      print("📦 [Top Rankings] Body:\n${topRes.body}");
 
-      // Get Attendance Stats
+      if (topRes.statusCode == 200) {
+        final topData = jsonDecode(topRes.body);
+        topOverall.value = (topData['topOverall'] as List).cast<Map<String, dynamic>>();
+        topReciters.value = (topData['topReciters'] as List).cast<Map<String, dynamic>>();
+        topSabrs.value = (topData['topSabrs'] as List).cast<Map<String, dynamic>>();
+        topAttendees.value = (topData['topAttendees'] as List).cast<Map<String, dynamic>>();
+      }
+
+      /// -------------------- Get Attendance Stats --------------------
       final attRes = await http.get(
         Uri.parse('${APIEndpoints.baseUrl}teacher/circle/attendance'),
         headers: headers,
       );
-      final attData = jsonDecode(attRes.body);
-      final stats = attData['attendanceStats'] as Map<String, dynamic>;
-      attendanceStats.value = stats.map((key, value) {
-        final ratio = (value['ratio'] as num?)?.toDouble() ?? 0.0;
-        return MapEntry(key, ratio / 100);
-      });
-      attendanceRatio.value =
-          "${((attendanceStats['حضور'] ?? 0.0) * 100).toStringAsFixed(1)}%";
+      print("📦 [Attendance Stats] Status: ${attRes.statusCode}");
+      print("📦 [Attendance Stats] Body:\n${attRes.body}");
 
-      // Get Rankings
+      if (attRes.statusCode == 200) {
+        final attData = jsonDecode(attRes.body);
+        final stats = attData['attendanceStats'] as Map<String, dynamic>;
+        attendanceStats.value = stats.map((key, value) {
+          final ratio = (value['ratio'] as num?)?.toDouble() ?? 0.0;
+          return MapEntry(key, ratio / 100);
+        });
+        attendanceRatio.value =
+            "${((attendanceStats['حضور'] ?? 0.0) * 100).toStringAsFixed(1)}%";
+      }
+
+      /// -------------------- Get Rankings --------------------
       final rankRes = await http.get(
         Uri.parse('${APIEndpoints.baseUrl}teacher/circle/rankings'),
         headers: headers,
       );
-      final rankData = jsonDecode(rankRes.body);
-      rank.value = rankData['circleOverallRank'] ?? 0;
-      circlesCount.value = rankData['circlesCount'] ?? 0;
+      print("📦 [Rankings] Status: ${rankRes.statusCode}");
+      print("📦 [Rankings] Body:\n${rankRes.body}");
 
-      // Get Recitations
+      if (rankRes.statusCode == 200) {
+        final rankData = jsonDecode(rankRes.body);
+        rank.value = rankData['circleOverallRank'] ?? 0;
+        circlesCount.value = rankData['circlesCount'] ?? 0;
+      }
+
+      /// -------------------- Get Recitations --------------------
       final recRes = await http.get(
         Uri.parse('${APIEndpoints.baseUrl}teacher/circle/recitations'),
         headers: headers,
       );
-      final recData = jsonDecode(recRes.body);
-      recitationCount.value = recData['recitationCount'] ?? 0;
-      recitationAvg.value =
-          (recData['recitationAvg'] as num?)?.toDouble() ?? 0.0;
+      print("📦 [Recitations] Status: ${recRes.statusCode}");
+      print("📦 [Recitations] Body:\n${recRes.body}");
 
-      // Get Sabrs
+      if (recRes.statusCode == 200) {
+        final recData = jsonDecode(recRes.body);
+        recitationCount.value = recData['recitationCount'] ?? 0;
+        recitationAvg.value =
+            (recData['recitationAvg'] as num?)?.toDouble() ?? 0.0;
+      }
+
+      /// -------------------- Get Sabrs --------------------
       final sabrRes = await http.get(
         Uri.parse('${APIEndpoints.baseUrl}teacher/circle/sabrs'),
         headers: headers,
       );
-      final sabrData = jsonDecode(sabrRes.body);
-      sabrCount.value = sabrData['sabrCount'] ?? 0;
-      sabrAvg.value = (sabrData['sabrAvg'] as num?)?.toDouble() ?? 0.0;
+      print("📦 [Sabrs] Status: ${sabrRes.statusCode}");
+      print("📦 [Sabrs] Body:\n${sabrRes.body}");
+
+      if (sabrRes.statusCode == 200) {
+        final sabrData = jsonDecode(sabrRes.body);
+        sabrCount.value = sabrData['sabrCount'] ?? 0;
+        sabrAvg.value = (sabrData['sabrAvg'] as num?)?.toDouble() ?? 0.0;
+      }
+
     } catch (e, stack) {
       print("❌ خطأ أثناء تحميل البيانات: $e\n$stack");
     } finally {

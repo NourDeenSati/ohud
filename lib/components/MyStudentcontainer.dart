@@ -61,7 +61,7 @@ class Mystudentcontainer extends StatelessWidget {
               GestureDetector(
                 onTap:
                     () => Get.to(
-                      StudentViewScreen(studentId: int.parse(studentId)),
+                      StudentViewScreen(studentId: int.parse(studentId),studentToken: int.parse(tokenId),),
                     ),
                 child: Icon(
                   Iconsax.arrow_circle_left,

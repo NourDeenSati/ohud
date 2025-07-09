@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+    
       title: 'Ohud App',
       locale: const Locale('ar'),
       supportedLocales: const [Locale('en'), Locale('ar')],

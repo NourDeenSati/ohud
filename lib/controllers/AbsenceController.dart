@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:intl/intl.dart';
 import 'package:ohud/utils/EndPoints.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,7 +23,6 @@ class AbsenceController extends GetxController {
   }
 
   void clearFields() {
-    studentId.value = '';
     reason.value = '';
     absenceDate.value = DateTime.now();
   }

@@ -7,7 +7,7 @@ import 'package:ohud/utils/EndPoints.dart';
 
 class NoteController extends GetxController {
   var studentId = ''.obs;
-  var noteType = 'سلبية'.obs;
+  var noteType = 'إيجابية'.obs;
   var reason = ''.obs;
   var isLoading = false.obs;
 
@@ -26,7 +26,7 @@ class NoteController extends GetxController {
   void clearFields() {
     studentId.value = '';
     reason.value = '';
-    noteType.value = 'سلبية'; // إعادة إلى القيمة الافتراضية
+    noteType.value = 'إيجابية'; // إعادة إلى القيمة الافتراضية
   }
 
   Future<bool> submitNote() async {

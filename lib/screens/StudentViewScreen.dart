@@ -4,15 +4,24 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:ohud/components/MyAppBar.dart';
 import 'package:ohud/components/MyStudentInfo.dart';
 import 'package:ohud/components/MyStudentInfo2.dart';
+import 'package:ohud/components/NominateAwqafSheet.dart';
+import 'package:ohud/controllers/AbsenceController.dart';
+import 'package:ohud/controllers/AwqafController.dart' show AwqafController;
 import 'package:ohud/controllers/studentviewController.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class StudentViewScreen extends StatelessWidget {
   final int studentId;
+  final int studentToken;
   final StudentController controller = Get.put(StudentController());
 
-  StudentViewScreen({super.key, required this.studentId}) {
+  StudentViewScreen({
+    super.key,
+    required this.studentId,
+    required this.studentToken,
+  }) {
     controller.fetchStudentData(studentId);
   }
   String _cleanPhoneNumber(String phone) {
@@ -105,31 +114,76 @@ class StudentViewScreen extends StatelessWidget {
                       type: 'الأجزاء المسبورة ',
                       info: data['sabrs_count'].toString(),
                     ),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20),
-                            ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12.0,
+                        vertical: 8,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildVerticalButton(
+                            icon: Icons.menu_book_rounded,
+                            label: "أرشيف التسميع",
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(20),
+                                  ),
+                                ),
+                                builder:
+                                    (_) => RecitationArchiveSheet(
+                                      recitations: data['recitation_history'],
+                                    ),
+                              );
+                            },
                           ),
-                          builder:
-                              (_) => RecitationArchiveSheet(
-                                recitations: data['recitation_history'],
-                              ),
-                        );
-                      },
-                      icon: Icon(Icons.menu_book_rounded, color: Colors.white),
-                      label: Text("عرض أرشيف التسميع"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 10,
-                        ),
+                          _buildVerticalButton(
+                            icon: Icons.mosque,
+                            label: "ترشيح للأوقاف",
+                            onPressed: () {
+                              final awqafController = Get.put(
+                                AwqafController(),
+                              );
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(20),
+                                  ),
+                                ),
+                                builder:
+                                    (_) => NominateAwqafSheet(
+                                      studentToken: studentToken,
+                                    ),
+                              );
+                            },
+                          ),
+                          _buildVerticalButton(
+                            icon: Icons.event_available,
+                            label: "أرشيف الحضور",
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(20),
+                                  ),
+                                ),
+                                builder:
+                                    (_) => AttendenceArchiveSheet(
+                                      attendances: data['attendances'],
+                                      studentToken: studentToken,
+                                    ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -141,6 +195,34 @@ class StudentViewScreen extends StatelessWidget {
       }),
     );
   }
+}
+
+Widget _buildVerticalButton({
+  required IconData icon,
+  required String label,
+  required VoidCallback onPressed,
+}) {
+  return ElevatedButton(
+    onPressed: onPressed,
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Colors.teal,
+      foregroundColor: Colors.white,
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    ),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 28, color: Colors.white),
+        const SizedBox(height: 6),
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 12),
+        ),
+      ],
+    ),
+  );
 }
 
 class RecitationArchiveSheet extends StatefulWidget {
@@ -304,6 +386,181 @@ class _RecitationArchiveSheetState extends State<RecitationArchiveSheet> {
                       const SizedBox(height: 12),
                     ],
                   ),
+              ],
+            ),
+          ),
+    );
+  }
+}
+
+class AttendenceArchiveSheet extends StatefulWidget {
+  final List attendances;
+  final int studentToken;
+  const AttendenceArchiveSheet({
+    super.key,
+    required this.attendances,
+    required this.studentToken,
+  });
+
+  @override
+  State<AttendenceArchiveSheet> createState() => _AttendenceArchiveSheet();
+}
+
+class _AttendenceArchiveSheet extends State<AttendenceArchiveSheet> {
+  bool sortDescending = false;
+
+  final AbsenceController absenceCtrl = Get.put(AbsenceController());
+
+  void _showJustificationDialog(DateTime date) {
+    final TextEditingController reasonCtrl = TextEditingController();
+    absenceCtrl.updateStudentId(widget.studentToken.toString());
+    absenceCtrl.updateAbsenceDate(date);
+
+    Get.defaultDialog(
+      title: "تبرير الغياب",
+      content: Column(
+        children: [
+          Text(
+            "يرجى كتابة سبب تبرير الغياب ليوم ${DateFormat('yyyy-MM-dd').format(date)}",
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: reasonCtrl,
+            maxLines: 3,
+            decoration: InputDecoration(
+              hintText: "اكتب سبب التبرير هنا",
+              border: OutlineInputBorder(),
+            ),
+            onChanged: (val) => absenceCtrl.reason.value = val,
+          ),
+        ],
+      ),
+      textConfirm: "إرسال",
+      textCancel: "إلغاء",
+      confirmTextColor: Colors.white,
+      onConfirm: () async {
+        if (reasonCtrl.text.trim().isEmpty) {
+          Get.snackbar(
+            "تنبيه",
+            "يرجى إدخال سبب التبرير",
+            colorText: Colors.black,
+          );
+          return;
+        }
+
+        final success = await absenceCtrl.submitAttendance();
+        if (success) {
+          // إغلاق الـ BottomSheet الذي فُتح عبر showModalBottomSheet
+          Navigator.of(context).pop();
+        }
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final List<Map> attendanceList = widget.attendances.cast<Map>();
+
+    attendanceList.sort((a, b) {
+      final dateA = DateTime.parse(a['date']);
+      final dateB = DateTime.parse(b['date']);
+      return sortDescending ? dateB.compareTo(dateA) : dateA.compareTo(dateB);
+    });
+
+    return DraggableScrollableSheet(
+      expand: false,
+      initialChildSize: 0.9,
+      builder:
+          (_, controller) => Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ListView(
+              controller: controller,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 5,
+                    margin: EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[400],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'أرشيف الحضور',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        sortDescending
+                            ? Icons.arrow_downward
+                            : Icons.arrow_upward,
+                        color: Colors.teal,
+                      ),
+                      tooltip: 'عكس الترتيب',
+                      onPressed: () {
+                        setState(() {
+                          sortDescending = !sortDescending;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                ...attendanceList.map((entry) {
+                  final date = DateTime.parse(entry['date']);
+                  final attendanceType = entry['attendanceType'] ?? '';
+                  final formattedDate = DateFormat('yyyy-MM-dd').format(date);
+
+                  final isUnexcused = attendanceType == "غياب غير مبرر";
+
+                  return GestureDetector(
+                    onTap: () {
+                      if (isUnexcused) {
+                        _showJustificationDialog(date);
+                      }
+                    },
+                    child: Container(
+                      margin: EdgeInsets.symmetric(vertical: 4),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color:
+                            isUnexcused ? Colors.red.shade50 : Colors.grey[100],
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color:
+                              isUnexcused
+                                  ? Colors.red.shade200
+                                  : Colors.teal.shade100,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('تاريخ $formattedDate'),
+                          Text(
+                            attendanceType,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: isUnexcused ? Colors.red : Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
               ],
             ),
           ),
