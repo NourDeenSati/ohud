@@ -6,12 +6,12 @@ import 'package:ohud/screens/SignInScreen.dart';
 import 'package:ohud/themes/themes.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shorebird_code_push/shorebird_code_push.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
   final bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-
   runApp(MyApp(isLoggedIn: isLoggedIn));
 }
 

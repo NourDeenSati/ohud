@@ -44,7 +44,7 @@ class PageCubit extends Cubit<PageStates> {
 
       allNotes.addAll({todayDate: []});
       currentDate = todayDate;
-    /*  var response = await ApiService.getDetails(
+      var response = await ApiService.getDetails(
         pageNumber: pageNumber,
         studentId: studentId,
       );
@@ -55,7 +55,7 @@ class PageCubit extends Cubit<PageStates> {
             listen["mistakes"],
           ),
         });
-      }*/
+      }
       getPageData();
 
       emit(SuccessPageState());
