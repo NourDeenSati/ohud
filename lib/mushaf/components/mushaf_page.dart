@@ -94,7 +94,7 @@ class MushafPage extends StatelessWidget {
                                     .read<PageCubit>()
                                     .pageLines[index]
                                     .isShort()
-                                        ? 200
+                                        ? MediaQuery.of(context).size.height*0.14
                                         : 0,
                               ),
                               child: FittedBox(
