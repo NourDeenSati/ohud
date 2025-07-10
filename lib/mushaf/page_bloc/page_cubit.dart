@@ -18,6 +18,8 @@ class PageCubit extends Cubit<PageStates> {
   String currentDate = "";
   String todayDate = "current";
   final String studentId;
+  String studentName = "";
+
   final Set<String> _highlightedWords = {};
 
   List<String> get datesValues => allNotes.keys.toList();
@@ -34,7 +36,6 @@ class PageCubit extends Cubit<PageStates> {
 
   Map<String, List<Note>> allNotes = {};
 
-   String studentName = "";
 
   bool get isCurrent => todayDate == currentDate;
 

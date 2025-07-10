@@ -23,13 +23,13 @@ class MushafPage extends StatelessWidget {
           return Container(
             padding: EdgeInsets.symmetric(
               vertical:
-                  pageNumber <= 2
-                      ? MediaQuery.of(context).size.width * 0.25
-                      : MediaQuery.of(context).size.width * 0.08,
+              pageNumber <= 2
+                  ? MediaQuery.of(context).size.height * 0.2
+                  : MediaQuery.of(context).size.height * 0.04,
               horizontal:
-                  pageNumber <= 2
-                      ? MediaQuery.of(context).size.width * 0.008
-                      : MediaQuery.of(context).size.width * 0.03,
+              pageNumber <= 2
+                  ? MediaQuery.of(context).size.width * 0.09
+                  : MediaQuery.of(context).size.width * 0.03,
             ),
             decoration: BoxDecoration(
               image: DecorationImage(
