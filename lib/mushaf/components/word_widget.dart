@@ -146,54 +146,37 @@ class WordWidget extends StatelessWidget {
   }
 
   String containNumber() {
-    List numbers = [
-      '٦',
-
-      '١',
-
-      '٠',
-
-      '٩',
-      '٨',
-      '٧',
-      '٥',
-      '٤',
-      '٣',
-      '٢',
-      '4',
-      '5',
-      '6',
-      '7',
-      '8',
-      '9',
-      '0',
-      '1',
-      '2',
-      '3',
-    ];
+    List numbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
     String num = "";
-    int index = 3;
-    while (index > 0) {
-      String hh = num;
+    Map<int, String> nums = {};
+    bool added = true;
 
-      for (var number in numbers) {
-        if (word.substring(word.length - 2, word.length - 1).contains(" ")) {
-          word = word.replaceRange(word.length - 2, word.length - 1, "");
-        }
-        print(word.characters.last==number.toString());
-        if (word.characters.last == number.toString()) {
-
-          word = word.replaceFirst(word.characters.last, "");
-          num = number.toString() + num;
+    while (added) {
+      added = false;
+      for (String number in numbers) {
+        int ind = -1;
+        word.characters.toList().asMap().forEach((k, v) {
+          if (v == number && !nums.containsKey(k)) {
+            ind = k;
+            added = true;
+            return;
+          }
+        });
+        if (ind != -1) {
+          nums.addAll({ind: number});
           break;
         }
       }
-      if (hh == num) {
-        index = 0;
-      } else {
-        index--;
-      }
     }
+    if (nums.isNotEmpty) {
+      List<int> keys = nums.keys.toList();
+      keys.sort();
+      for (var key in keys) {
+        num += nums[key] ?? "";
+      }
+      word = word.substring(0, word.length - keys.length - 1);
+    }
+
     return num;
   }
 }
